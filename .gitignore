@@ -1,6 +1,7 @@
-*.swp
+*.out
 /TAGS
 /lib/opengl/*.so
 /lib/opengl/*.bundle
 /pkg
 /tmp
+/obj
