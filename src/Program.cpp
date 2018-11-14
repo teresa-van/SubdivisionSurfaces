@@ -31,7 +31,7 @@ void Program::setupWindow() {
 	}
 
 	glfwWindowHint(GLFW_SAMPLES, 16);
-	window = glfwCreateWindow(512, 512, "589 Boilerplate", NULL, NULL);
+	window = glfwCreateWindow(1024, 1024, "Subdivision Surfaces", NULL, NULL);
 	glfwMakeContextCurrent(window);
 	glfwSwapInterval(1); // V-sync on
 
@@ -77,20 +77,25 @@ void Program::mainLoop() {
 //	std::vector<std::vector<std::pair<int,int>>> faces;
 	bool res = loadOBJ("src/male_head.obj", vertices, vnormals, faces, fnormals);
 
+	std::vector<Vertex*> vList;
+	std::vector<Face*> fList;
 	std::map<std::pair<int, int>, HalfEdge*> Edges;
-
-/*	for (glm::vec3 v : vertices) {
-		Geometry* point = new Geometry();
-		point->makePoint(v);
-		point->modelMatrix = glm::rotate(point->modelMatrix, glm::radians(180.0f), glm::vec3(0.0f,1.0f,0.0f));
-		point->modelMatrix = glm::rotate(point->modelMatrix, glm::radians(90.0f), glm::vec3(-1.0f,0.0f,0.0f));
-			
-		renderEngine->assignBuffers(*point);
-		InputHandler::stuff.push_back(point);
-	}*/
+	
+	for (glm::vec3 v : vertices) {
+		Vertex* p = new Vertex();
+		p->v = v;
+		vList.push_back(p);
+	}
+	for (std::vector<int> f : faces) {
+		Face* fa = new Face();
+		fList.push_back(fa);
+	}
+	
+	int faceIndex = 0;
+	
 	for (std::vector<int> face : faces) {
-//	std::vector<int> face = faces[400];
-		Face * f = new Face();
+		
+//		Face * f = new Face();
 		for (int i=0; i<face.size(); i++) {
 			int u, v;
 			u = i;
@@ -100,15 +105,18 @@ void Program::mainLoop() {
 				v = u+1;
 			std::pair<int,int> uv = std::make_pair(u,v);
 			Edges[uv] = new HalfEdge();
-			Edges[uv]->f = f;
-			Vertex *v_u = new Vertex();
-			v_u->v = vertices[face[u]];
+//			Edges[uv]->f = f;
+			Edges[uv]->f = fList[faceIndex];
+//			Vertex *v_u = new Vertex();
+//			v_u->v = vertices[face[u]-1];
 //			Vertex *v_v = new Vertex();
-			//std::cout << v_u->v.x << " , " << v_u->v.y << " , " << v_u->v.z << std::endl;
 //			std::cout << v_u->v.x << " , " << v_u->v.y << " , " << v_u->v.z << std::endl;
-			Edges[uv]->start = v_u;
-			v_u->e = Edges[uv];
-			f->e = Edges[uv];
+//			std::cout << v_u->v.x << " , " << v_u->v.y << " , " << v_u->v.z << std::endl;
+//			Edges[uv]->start = v_u;
+			Edges[uv]->start = vList[face[u]-1];
+//			v_u->e = Edges[uv];
+//			f->e = Edges[uv];
+			fList[faceIndex]->e = Edges[uv];
 		}
 		for (int i=0; i<face.size(); i++) {
 			int u, v, unext, vnext;
@@ -125,24 +133,40 @@ void Program::mainLoop() {
 			if (v >= face.size() - 1) vnext = 0;
 			std::pair<int,int> uv = std::make_pair(u,v);
 			std::pair<int,int> vu = std::make_pair(v,u);
+			std::pair<int,int> uvnext = std::make_pair(unext,vnext);
 //			std::cout << u << "," << v << "\t" << unext << "," << vnext << std::endl;
-			Edges[uv]->nextEdge = Edges[std::make_pair(unext,vnext)];
+			Edges[uv]->nextEdge = Edges[uvnext];
 			if (Edges.find(vu) != Edges.end()) {
 				Edges[uv]->pairEdge = Edges[vu];
 				Edges[vu]->pairEdge = Edges[uv];
 			}
-			Geometry *he = new Geometry();
-//			he->makePoint(Edges[uv]->start->v);
-//			he->makeHEdge(Edges[uv]);
+/*			Geometry *he = new Geometry();
 			he->makeEdge(Edges[uv]->start->v, Edges[uv]->nextEdge->start->v);
-//			std::cout << Edges[uv]->start->v.x << " , " << Edges[uv]->start->v.y << " , " << Edges[uv]->start->v.z << " :::::: " << Edges[uv]->nextEdge->start->v.x << ","<< Edges[uv]->nextEdge->start->v.y  <<","<< Edges[uv]->nextEdge->start->v.z << std::endl;
 			he->modelMatrix = glm::rotate(he->modelMatrix, glm::radians(180.0f), glm::vec3(0.0f,1.0f,0.0f));
 			he->modelMatrix = glm::rotate(he->modelMatrix, glm::radians(90.0f), glm::vec3(-1.0f,0.0f,0.0f));
 				
 			renderEngine->assignBuffers(*he);
-			InputHandler::stuff.push_back(he);
+			InputHandler::stuff.push_back(he);*/
+			
 		}
+		faceIndex++;
 	}
+		for (Face* f : fList) {
+			std::vector<glm::vec3> facePoints;
+			HalfEdge* curEdge = f->e;
+			do {
+				facePoints.push_back(curEdge->start->v);
+				curEdge = curEdge->nextEdge;
+			}
+			while (curEdge != f->e);
+			Geometry* fa = new Geometry();
+			fa->makeFace(facePoints);
+			fa->modelMatrix = glm::rotate(fa->modelMatrix, glm::radians(180.0f), glm::vec3(0.0f,1.0f,0.0f));
+			fa->modelMatrix = glm::rotate(fa->modelMatrix, glm::radians(90.0f), glm::vec3(-1.0f,0.0f,0.0f));
+				
+			renderEngine->assignBuffers(*fa);
+			InputHandler::stuff.push_back(fa);
+		}
 	
 	
 	

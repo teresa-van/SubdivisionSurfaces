@@ -94,13 +94,20 @@ void Geometry::makeCube(glm::vec3 pos, float w, float h, float d) {
 //	glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 }
 
-void Geometry::makeFace(glm::vec3 p0, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3) {
+/*void Geometry::makeFace(glm::vec3 p0, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3) {
 	verts.push_back(p0);
 	verts.push_back(p1);
 	verts.push_back(p2);
 	verts.push_back(p3);
 	for (int i=0; i<24; i++)
 		colours.push_back(glm::vec3(1.0f,0.0f,0.0f));
+	drawMode = GL_LINE_LOOP;
+}*/
+void Geometry::makeFace(std::vector<glm::vec3> points) {
+	for (glm::vec3 p : points) {
+		verts.push_back(p);
+		colours.push_back(glm::vec3(1.0f,0.0f,0.0f));
+	}
 	drawMode = GL_LINE_LOOP;
 }
 

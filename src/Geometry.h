@@ -43,7 +43,8 @@ public:
 	glm::mat4 modelMatrix;
 	
 	void makeCube(glm::vec3 pos, float w, float h, float d);
-	void makeFace(glm::vec3 p0, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3);
+//	void makeFace(glm::vec3 p0, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3);
+	void makeFace(std::vector<glm::vec3> points);
 	void makePoint(glm::vec3 v);
 //	void makeHEdge(HalfEdge *e);
 //	void makeEdge(Vertex p0, Vertex p1);

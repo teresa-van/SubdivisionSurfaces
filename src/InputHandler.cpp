@@ -100,7 +100,7 @@ void InputHandler::mouse(GLFWwindow* window, int button, int action, int mods) {
 //		oldyclick=thetaY;
 
 	}
-	std::cout<< xclick << std::endl;
+//	std::cout<< xclick << std::endl;
 	renderGeometries();
 }
 
@@ -172,7 +172,7 @@ void InputHandler::cameraController(glm::vec3 dPos) {
 
 void InputHandler::renderGeometries() {
 //	controller();
-	std::cout << camPos.x << "," << camPos.y << "," << camPos.z << std::endl;
+//	std::cout << camPos.x << "," << camPos.y << "," << camPos.z << std::endl;
 	glm::vec3 direction(cos(thetaY)*sin(thetaX),sin(thetaY),cos(thetaY)*cos(thetaX));
 	glm::vec3 right = glm::vec3(sin(thetaX-M_PI/2.0f),0,cos(thetaX-M_PI/2.0f));
 //	glm::mat4 proj = glm::lookAt(camPos, camPos+direction, glm::cross(right,direction));
