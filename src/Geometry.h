@@ -18,7 +18,9 @@ struct HalfEdge {
 	Face* f;
 };
 struct Vertex {
-	float x, y, z;
+//	float x, y, z;
+	glm::vec3 v;
+	glm::vec3 vn;
 	HalfEdge* e;
 };
 struct Face {
@@ -43,7 +45,9 @@ public:
 	void makeCube(glm::vec3 pos, float w, float h, float d);
 	void makeFace(glm::vec3 p0, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3);
 	void makePoint(glm::vec3 v);
-	void makeEdge(Vertex p0, Vertex p1);
+//	void makeHEdge(HalfEdge *e);
+//	void makeEdge(Vertex p0, Vertex p1);
+	void makeEdge(glm::vec3 p0, glm::vec3 p1);
 	void clearGeometry();
 };
 

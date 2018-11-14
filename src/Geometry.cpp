@@ -109,10 +109,21 @@ void Geometry::makePoint(glm::vec3 v) {
 	colours.push_back(glm::vec3(0.0f,0.0f,1.0f));
 	drawMode = GL_POINTS;
 }
-
-void Geometry::makeEdge(Vertex p0, Vertex p1) {
-	verts.push_back(glm::vec3(p0.x,p0.y,p0.z));
-	verts.push_back(glm::vec3(p1.x,p1.y,p1.z));
+/*
+void Geometry::makeHEdge(HalfEdge *e) {
+	verts.push_back(e->start);
+	verts.push_back(e->nextEdge->start);
+	colours.push_back(glm::vec3(0.0f,0.0f,1.0f));
+	colours.push_back(glm::vec3(0.0f,0.0f,1.0f));
+	drawMode = GL_LINES;
+}
+*/
+//void Geometry::makeEdge(Vertex p0, Vertex p1) {
+void Geometry::makeEdge(glm::vec3 p0, glm::vec3 p1) {
+//	verts.push_back(glm::vec3(p0.x,p0.y,p0.z));
+//	verts.push_back(glm::vec3(p1.x,p1.y,p1.z));
+	verts.push_back(p0);
+	verts.push_back(p1);
 	colours.push_back(glm::vec3(1.0f,0.0f,0.0f));
 	colours.push_back(glm::vec3(1.0f,0.0f,0.0f));
 	drawMode = GL_LINES;
