@@ -23,6 +23,8 @@ void RenderEngine::render(const std::vector<Geometry*>& objects, glm::mat4 view,
 	glUseProgram(mainProgram);
 
 	for (const Geometry* o : objects) {
+		
+		
 		glBindVertexArray(o->vao);
 		
 		glm::mat4 modelView = view * o->modelMatrix;
@@ -30,6 +32,8 @@ void RenderEngine::render(const std::vector<Geometry*>& objects, glm::mat4 view,
 //		glUniform3fv(glGetUniformLocation(mainProgram, "position"), 1, glm::value_ptr(pos));
 		glUniformMatrix4fv(glGetUniformLocation(mainProgram, "modelView"), 1, GL_FALSE, glm::value_ptr(modelView));
 		glUniformMatrix4fv(glGetUniformLocation(mainProgram, "ortho"), 1, GL_FALSE, glm::value_ptr(ortho));
+		
+		
 //		glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 		glDrawArrays(o->drawMode, 0, o->verts.size());
 		glBindVertexArray(0);

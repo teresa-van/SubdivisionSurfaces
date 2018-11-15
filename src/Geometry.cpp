@@ -103,12 +103,39 @@ void Geometry::makeCube(glm::vec3 pos, float w, float h, float d) {
 		colours.push_back(glm::vec3(1.0f,0.0f,0.0f));
 	drawMode = GL_LINE_LOOP;
 }*/
+/*
 void Geometry::makeFace(std::vector<glm::vec3> points) {
 	for (glm::vec3 p : points) {
 		verts.push_back(p);
 		colours.push_back(glm::vec3(1.0f,0.0f,0.0f));
 	}
 	drawMode = GL_LINE_LOOP;
+}*/
+void Geometry::makeFace(Face* f) {
+//			std::vector<glm::vec3> facePoints;
+	std::vector<HalfEdge*> faceEdges;
+	HalfEdge* curEdge = f->e;
+	do {
+//				facePoints.push_back(curEdge->start->v);
+		faceEdges.push_back(curEdge);
+		curEdge = curEdge->nextEdge;
+	}
+	while (curEdge != f->e);
+//	for (glm::vec3 p : points) {
+	for (HalfEdge* h : faceEdges) {
+		verts.push_back(h->start->v);
+		verts.push_back(h->nextEdge->start->v);
+		int r = (h->id & 0x000000FF) >> 0;
+		int g = (h->id & 0x0000FF00) >> 8;
+		int b = (h->id & 0x00FF0000) >> 16;
+//		colours.push_back(glm::vec3(1.0f, 0.0f, 0.0f));
+//		colours.push_back(glm::vec3(1.0f, 0.0f, 0.0f));
+		colours.push_back(glm::vec3(r/255.0f,g/255.0f,b/255.0f));
+		colours.push_back(glm::vec3(r/255.0f,g/255.0f,b/255.0f));
+//		colours.push_back(glm::vec3(1.0f,0.0f,0.0f));
+	}
+	glLineWidth(3.0f);
+	drawMode = GL_LINES;
 }
 
 void Geometry::makePoint(glm::vec3 v) {

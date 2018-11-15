@@ -80,21 +80,24 @@ void Program::mainLoop() {
 	std::vector<Vertex*> vList;
 	std::vector<Face*> fList;
 	std::map<std::pair<int, int>, HalfEdge*> Edges;
+	std::map<int, HalfEdge*> EdgeIDs;
 	
 	for (glm::vec3 v : vertices) {
 		Vertex* p = new Vertex();
 		p->v = v;
 		vList.push_back(p);
 	}
-	for (std::vector<int> f : faces) {
+/*	for (std::vector<int> f : faces) {
 		Face* fa = new Face();
 		fList.push_back(fa);
-	}
-	
+	}*/
+	Face* fa = new Face();
+		fList.push_back(fa);
 	int faceIndex = 0;
 	int idCounter = 0;
 	
-	for (std::vector<int> face : faces) {
+//	for (std::vector<int> face : faces) {
+	std::vector<int> face = faces[1000];
 		
 //		Face * f = new Face();
 		for (int i=0; i<face.size(); i++) {
@@ -154,6 +157,7 @@ void Program::mainLoop() {
 			}
 			if (Edges[uv]->id == -1) {
 				Edges[uv]->id = idCounter;
+				EdgeIDs[idCounter] = Edges[uv];
 				idCounter++;
 			}
 //			std::cout <<"dfasdfsd" << std::endl;
@@ -169,17 +173,20 @@ void Program::mainLoop() {
 			
 		}
 		faceIndex++;
-	}
+//	}
 		for (Face* f : fList) {
-			std::vector<glm::vec3> facePoints;
+//			std::vector<glm::vec3> facePoints;
+/*			std::vector<HalfEdge*> faceEdges
 			HalfEdge* curEdge = f->e;
 			do {
-				facePoints.push_back(curEdge->start->v);
+//				facePoints.push_back(curEdge->start->v);
+				faceEdges.push_back(curEdge);
 				curEdge = curEdge->nextEdge;
 			}
-			while (curEdge != f->e);
+			while (curEdge != f->e);*/
 			Geometry* fa = new Geometry();
-			fa->makeFace(facePoints);
+//			fa->makeFace(facePoints);
+			fa->makeFace(f);
 			fa->modelMatrix = glm::rotate(fa->modelMatrix, glm::radians(180.0f), glm::vec3(0.0f,1.0f,0.0f));
 			fa->modelMatrix = glm::rotate(fa->modelMatrix, glm::radians(90.0f), glm::vec3(-1.0f,0.0f,0.0f));
 				
@@ -188,7 +195,9 @@ void Program::mainLoop() {
 		}
 //		std::cout << fList.size() << std::endl;
 	
-	
+//	for (int i=0; i<idCounter; i++)
+//		std::cout << i << "    :    " << EdgeIDs[i]->id << std::endl;
+		//std::cout << EdgeIDs[i]->start->v.x << "," << EdgeIDs[i]->start->v.y << "," << EdgeIDs[i]->start->v.z << std::endl;
 	
 	
 	
