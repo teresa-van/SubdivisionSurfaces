@@ -10,12 +10,15 @@
 struct HalfEdge;
 struct Vertex;
 struct Face;
+struct Edge;
 
 struct HalfEdge {
 	HalfEdge* nextEdge;
 	HalfEdge* pairEdge;
 	Vertex* start;
 	Face* f;
+	int id;
+	float sharpness;
 };
 struct Vertex {
 //	float x, y, z;

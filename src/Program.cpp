@@ -62,7 +62,7 @@ bool InputHandler::moveBack = false;
 
 glm::vec3 InputHandler::camRight = glm::vec3(1.0f, 0.0f, 0.0f);
 glm::vec3 InputHandler::camTarget = glm::vec3(0.0f, 0.0f, 0.0f);
-glm::vec3 InputHandler::camSpherePos = glm::vec3(M_PI/2, M_PI/2, 25.0f);
+glm::vec3 InputHandler::camSpherePos = glm::vec3(M_PI/2, M_PI/2, 50.0f);
 glm::vec2 InputHandler::mousePos = glm::vec2(0, 0);
 
 
@@ -92,6 +92,7 @@ void Program::mainLoop() {
 	}
 	
 	int faceIndex = 0;
+	int idCounter = 0;
 	
 	for (std::vector<int> face : faces) {
 		
@@ -103,8 +104,11 @@ void Program::mainLoop() {
 				v = 0;
 			else
 				v = u+1;
-			std::pair<int,int> uv = std::make_pair(u,v);
+			std::pair<int,int> uv = std::make_pair(face[u],face[v]);
 			Edges[uv] = new HalfEdge();
+			Edges[uv]->sharpness = 0.0f;
+			Edges[uv]->id = -1;
+						
 //			Edges[uv]->f = f;
 			Edges[uv]->f = fList[faceIndex];
 //			Vertex *v_u = new Vertex();
@@ -131,15 +135,30 @@ void Program::mainLoop() {
 			
 			if (u >= face.size() - 1) unext = 0;
 			if (v >= face.size() - 1) vnext = 0;
-			std::pair<int,int> uv = std::make_pair(u,v);
-			std::pair<int,int> vu = std::make_pair(v,u);
-			std::pair<int,int> uvnext = std::make_pair(unext,vnext);
+			
+			std::pair<int,int> uv = std::make_pair(face[u],face[v]);
+			std::pair<int,int> vu = std::make_pair(uv.second,uv.first);
+			std::pair<int,int> uvnext = std::make_pair(face[unext],face[vnext]);
+			
+
+			
 //			std::cout << u << "," << v << "\t" << unext << "," << vnext << std::endl;
 			Edges[uv]->nextEdge = Edges[uvnext];
+//			std::cout<< " : " << Edges.end() << std::endl;
 			if (Edges.find(vu) != Edges.end()) {
 				Edges[uv]->pairEdge = Edges[vu];
 				Edges[vu]->pairEdge = Edges[uv];
+				Edges[uv]->id = Edges[vu]->id;
+				
+//				std::cout << Edges[vu]->id << std::endl;
 			}
+			if (Edges[uv]->id == -1) {
+				Edges[uv]->id = idCounter;
+				idCounter++;
+			}
+//			std::cout <<"dfasdfsd" << std::endl;
+//			else
+//				std::cout << Edges[uv]->id << std::endl;
 /*			Geometry *he = new Geometry();
 			he->makeEdge(Edges[uv]->start->v, Edges[uv]->nextEdge->start->v);
 			he->modelMatrix = glm::rotate(he->modelMatrix, glm::radians(180.0f), glm::vec3(0.0f,1.0f,0.0f));
@@ -167,6 +186,7 @@ void Program::mainLoop() {
 			renderEngine->assignBuffers(*fa);
 			InputHandler::stuff.push_back(fa);
 		}
+//		std::cout << fList.size() << std::endl;
 	
 	
 	

@@ -177,7 +177,9 @@ void InputHandler::renderGeometries() {
 	glm::vec3 right = glm::vec3(sin(thetaX-M_PI/2.0f),0,cos(thetaX-M_PI/2.0f));
 //	glm::mat4 proj = glm::lookAt(camPos, camPos+direction, glm::cross(right,direction));
 	glm::mat4 proj = glm::lookAt(camPos, camTarget, camUp);
-	glm::mat4 view = glm::perspective(glm::radians(90.0f), 3.0f / 3.0f, 0.1f, 100.0f);
+	glm::mat4 view = glm::perspective(glm::radians(60.0f), 3.0f / 3.0f, 0.1f, 100.0f);
+//	glm::mat4 view = glm::ortho(-50.0f, 50.0f, -50.0f, 50.0f, -50.0f, 50.0f);
+
 //	renderEngine->render(stuff, proj, glm::mat4(1.0), 1);
 //	renderEngine->render(stuff, glm::mat4(1.0), 1);
 //	stuff.clear();
