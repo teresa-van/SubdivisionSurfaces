@@ -136,17 +136,20 @@ void InputHandler::motion(GLFWwindow* window, double x, double y) {
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 		unsigned char data[4];
 //		int data[4];
-		glReadPixels(x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &data);
+		glReadPixels(x, 1024-y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &data);
 //		std::cout << "r:" << (int)data[0] << ", g:" << (int)data[1] << ", b:" << (int)data[2] << ", a:" << (int)data[3] << std::endl;
 //		int pickedID = (int)data[0] + (int)data[1]*256 + (int)data[2]*256*256;
-		int pickedID = data[0] + data[1]*256 + data[2]*256*256;
-		if (pickedID == 0x00FFFFFF) {
+		int pickedID = ((data[0] + data[1]*256 + data[2]*256*256) & lastID) &0x00ffffff;
+//		if (pickedID == 0x00FFFFFF) {
+		if (pickedID == lastID) {
 //			std::cout << pickedID << ": background" << std::endl;
 //			lefthold = true;
 		}
 		else {
+			if ((int)data[3] == 255) {
 					std::cout << "r:" << (int)data[0] << ", g:" << (int)data[1] << ", b:" << (int)data[2] << ", a:" << (int)data[3] << std::endl;
 			std::cout << "EdgeID : " <<pickedID << std::endl;
+		}
 	}
 	
 	glm::vec2 newPos = glm::vec2(x/256, -y/256)*2.f - glm::vec2(1.f);

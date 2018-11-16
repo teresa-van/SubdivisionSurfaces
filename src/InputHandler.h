@@ -51,6 +51,7 @@ public:
 	static void renderGeometries();
 	static std::vector<Geometry*> stuff;
 	
+	static int lastID;
 		
 private:
 	static RenderEngine* renderEngine;

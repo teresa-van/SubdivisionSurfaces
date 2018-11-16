@@ -73,6 +73,8 @@ glm::vec2 InputHandler::mousePos = glm::vec2(0, 0);
 
 std::vector<Geometry*> InputHandler::stuff;
 
+int InputHandler::lastID = 0;
+
 void Program::mainLoop() {
 	
 	std::vector<glm::vec3> vertices;
@@ -81,6 +83,7 @@ void Program::mainLoop() {
 	std::vector<std::vector<int>> fnormals;
 //	std::vector<std::vector<std::pair<int,int>>> faces;
 	bool res = loadOBJ("src/male_head.obj", vertices, vnormals, faces, fnormals);
+//	bool res = loadOBJ("src/uh60.obj", vertices, vnormals, faces, fnormals);
 
 	std::vector<Vertex*> vList;
 	std::vector<Face*> fList;
@@ -93,15 +96,17 @@ void Program::mainLoop() {
 		vList.push_back(p);
 	}
 	for (std::vector<int> f : faces) {
+//	for (int k=1000; k<1006;k++){
 		Face* fa = new Face();
 		fList.push_back(fa);
 	}
 //	Face* fa = new Face();
 //		fList.push_back(fa);
 	int faceIndex = 0;
-	int idCounter = 0;
-	
+	int idCounter = 15;
 	for (std::vector<int> face : faces) {
+//	for (int k=1000; k<1006; k++) {
+//		std::vector<int> face = faces[k];
 //	std::vector<int> face = faces[1000];
 		
 //		Face * f = new Face();
@@ -126,6 +131,7 @@ void Program::mainLoop() {
 //			std::cout << v_u->v.x << " , " << v_u->v.y << " , " << v_u->v.z << std::endl;
 //			Edges[uv]->start = v_u;
 			Edges[uv]->start = vList[face[u]-1];
+//			Edges[uv]->start->v = Edges[uv]->start->v;
 //			v_u->e = Edges[uv];
 //			f->e = Edges[uv];
 			fList[faceIndex]->e = Edges[uv];
@@ -164,10 +170,11 @@ void Program::mainLoop() {
 				Edges[uv]->id = idCounter;
 				EdgeIDs[idCounter] = Edges[uv];
 				idCounter++;
+//				idCounter = idCounter << 1;
 			}
 //			std::cout <<"dfasdfsd" << std::endl;
 //			else
-//				std::cout << Edges[uv]->id << std::endl;
+				std::cout << Edges[uv]->id << std::endl;
 /*			Geometry *he = new Geometry();
 			he->makeEdge(Edges[uv]->start->v, Edges[uv]->nextEdge->start->v);
 			he->modelMatrix = glm::rotate(he->modelMatrix, glm::radians(180.0f), glm::vec3(0.0f,1.0f,0.0f));
@@ -179,6 +186,7 @@ void Program::mainLoop() {
 		}
 		faceIndex++;
 	}
+			InputHandler::lastID = idCounter;
 			Geometry* mesh = new Geometry();
 			mesh->makeMesh(fList);
 			mesh->modelMatrix = glm::rotate(mesh->modelMatrix, glm::radians(180.0f), glm::vec3(0.0f,1.0f,0.0f));
@@ -206,6 +214,7 @@ void Program::mainLoop() {
 			InputHandler::stuff.push_back(fa);
 		}*/
 //		std::cout << fList.size() << std::endl;
+//		std::cout << idCounter << std::endl;
 	
 //	for (int i=0; i<idCounter; i++)
 //		std::cout << i << "    :    " << EdgeIDs[i]->id << std::endl;
