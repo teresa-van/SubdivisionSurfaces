@@ -137,16 +137,17 @@ void InputHandler::motion(GLFWwindow* window, double x, double y) {
 		unsigned char data[4];
 //		int data[4];
 		glReadPixels(x, y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &data);
-		std::cout << "r:" << (int)data[0] << ", g:" << (int)data[1] << ", b:" << (int)data[2] << ", a:" << (int)data[3] << std::endl;
+//		std::cout << "r:" << (int)data[0] << ", g:" << (int)data[1] << ", b:" << (int)data[2] << ", a:" << (int)data[3] << std::endl;
 //		int pickedID = (int)data[0] + (int)data[1]*256 + (int)data[2]*256*256;
 		int pickedID = data[0] + data[1]*256 + data[2]*256*256;
 		if (pickedID == 0x00FFFFFF) {
-			std::cout << pickedID << ": background" << std::endl;
+//			std::cout << pickedID << ": background" << std::endl;
 //			lefthold = true;
 		}
-		else 
+		else {
+					std::cout << "r:" << (int)data[0] << ", g:" << (int)data[1] << ", b:" << (int)data[2] << ", a:" << (int)data[3] << std::endl;
 			std::cout << "EdgeID : " <<pickedID << std::endl;
-	
+	}
 	
 	glm::vec2 newPos = glm::vec2(x/256, -y/256)*2.f - glm::vec2(1.f);
 	glm::vec2 diff = newPos - mousePos;
@@ -210,7 +211,7 @@ void InputHandler::renderGeometries() {
 	glm::vec3 right = glm::vec3(sin(thetaX-M_PI/2.0f),0,cos(thetaX-M_PI/2.0f));
 //	glm::mat4 proj = glm::lookAt(camPos, camPos+direction, glm::cross(right,direction));
 	glm::mat4 proj = glm::lookAt(camPos, camTarget, camUp);
-	glm::mat4 view = glm::perspective(glm::radians(60.0f), 3.0f / 3.0f, 0.1f, 100.0f);
+	glm::mat4 view = glm::perspective(glm::radians(60.0f), 3.0f / 3.0f, 0.1f, 1024.0f);
 //	glm::mat4 view = glm::ortho(-50.0f, 50.0f, -50.0f, 50.0f, -50.0f, 50.0f);
 
 //	renderEngine->render(stuff, proj, glm::mat4(1.0), 1);

@@ -33,7 +33,7 @@ void Program::setupWindow() {
 	
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+//	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_SAMPLES, 16);
 	window = glfwCreateWindow(1024, 1024, "Subdivision Surfaces", NULL, NULL);
@@ -92,17 +92,17 @@ void Program::mainLoop() {
 		p->v = v;
 		vList.push_back(p);
 	}
-/*	for (std::vector<int> f : faces) {
+	for (std::vector<int> f : faces) {
 		Face* fa = new Face();
 		fList.push_back(fa);
-	}*/
-	Face* fa = new Face();
-		fList.push_back(fa);
+	}
+//	Face* fa = new Face();
+//		fList.push_back(fa);
 	int faceIndex = 0;
 	int idCounter = 0;
 	
-//	for (std::vector<int> face : faces) {
-	std::vector<int> face = faces[1000];
+	for (std::vector<int> face : faces) {
+//	std::vector<int> face = faces[1000];
 		
 //		Face * f = new Face();
 		for (int i=0; i<face.size(); i++) {
@@ -178,8 +178,15 @@ void Program::mainLoop() {
 			
 		}
 		faceIndex++;
-//	}
-		for (Face* f : fList) {
+	}
+			Geometry* mesh = new Geometry();
+			mesh->makeMesh(fList);
+			mesh->modelMatrix = glm::rotate(mesh->modelMatrix, glm::radians(180.0f), glm::vec3(0.0f,1.0f,0.0f));
+			mesh->modelMatrix = glm::rotate(mesh->modelMatrix, glm::radians(90.0f), glm::vec3(-1.0f,0.0f,0.0f));
+				
+			renderEngine->assignBuffers(*mesh);
+			InputHandler::stuff.push_back(mesh);
+//		for (Face* f : fList) {
 //			std::vector<glm::vec3> facePoints;
 /*			std::vector<HalfEdge*> faceEdges
 			HalfEdge* curEdge = f->e;
@@ -189,7 +196,7 @@ void Program::mainLoop() {
 				curEdge = curEdge->nextEdge;
 			}
 			while (curEdge != f->e);*/
-			Geometry* fa = new Geometry();
+/*			Geometry* fa = new Geometry();
 //			fa->makeFace(facePoints);
 			fa->makeFace(f);
 			fa->modelMatrix = glm::rotate(fa->modelMatrix, glm::radians(180.0f), glm::vec3(0.0f,1.0f,0.0f));
@@ -197,7 +204,7 @@ void Program::mainLoop() {
 				
 			renderEngine->assignBuffers(*fa);
 			InputHandler::stuff.push_back(fa);
-		}
+		}*/
 //		std::cout << fList.size() << std::endl;
 	
 //	for (int i=0; i<idCounter; i++)
