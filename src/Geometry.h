@@ -4,6 +4,7 @@
 #include <GL/glew.h>
 
 #include <vector>
+#include <map>
 
 //#include "InputHandler.h"
 
@@ -41,8 +42,11 @@ public:
 	GLuint vao;
 	GLuint vertexBuffer;
 	GLuint colourBuffer;
+//	GLuint colourBuffer0;
 	std::vector<glm::vec3> verts;
 	std::vector<glm::vec3> colours;
+//	std::vector<glm::vec3> colours0;
+	std::vector<glm::vec3> colours1;
 	glm::mat4 modelMatrix;
 	
 	void makeCube(glm::vec3 pos, float w, float h, float d);
@@ -55,5 +59,11 @@ public:
 //	void makeEdge(Vertex p0, Vertex p1);
 	void makeEdge(glm::vec3 p0, glm::vec3 p1);
 	void clearGeometry();
+	
+	void highlightEdge(int eID);
+	void unhighlightEdge(int eID);
+	void unhighlightEdge();
+	
+	static std::map<int, HalfEdge*> EdgeIDs;
 };
 

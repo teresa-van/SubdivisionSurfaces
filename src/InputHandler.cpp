@@ -25,6 +25,12 @@ void InputHandler::key(GLFWwindow* window, int key, int scancode, int action, in
 		glfwTerminate();
 		exit(0);
 	}
+	if (key == GLFW_KEY_LEFT_SHIFT) {
+		if (action == GLFW_PRESS||action == GLFW_REPEAT) 
+			multiPick = true;
+		else
+			multiPick = false;
+	}
 	if (key == GLFW_KEY_A && action == GLFW_PRESS) 
 		moveLeft = true;
 	if (key == GLFW_KEY_S && action == GLFW_PRESS) 
@@ -89,24 +95,49 @@ void InputHandler::mouse(GLFWwindow* window, int button, int action, int mods) {
 	
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
 	{	
-//		std::cout << xclick<< "," << yclick << std::endl;
+	//		std::cout << xclick<< "," << yclick << std::endl;
+		if (!multiPick) 
+			pickedIDs.clear();
 		glFlush();
 		glFinish();
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 		unsigned char data[4];
-//		int data[4];
-		glReadPixels(xclick, yclick, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &data);
-		std::cout << "r:" << (int)data[0] << ", g:" << (int)data[1] << ", b:" << (int)data[2] << ", a:" << (int)data[3] << std::endl;
-//		int pickedID = (int)data[0] + (int)data[1]*256 + (int)data[2]*256*256;
-		int pickedID = data[0] + data[1]*256 + data[2]*256*256;
-		if (pickedID == 0x00FFFFFF) {
-			std::cout << pickedID << ": background" << std::endl;
+	//		int data[4];
+		
+		glReadPixels(x, 1024-y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &data);
+		pickedID = ((data[0] + data[1]*256 + data[2]*256*256)) &0x00ffffff;
+		if (pickedID == 0x00ffffff) {
+	//			std::cout << pickedID << ": background" << std::endl;
 			lefthold = true;
+			pickedID = -1;
+			
 		}
-		else 
-			std::cout << "EdgeID : " <<pickedID << std::endl;
-//		dx = 0;
-//		dy = 0;
+		else {
+			if ((int)data[3] == 255) {
+				std::cout << "r:" << (int)data[0] << ", g:" << (int)data[1] << ", b:" << (int)data[2] << ", a:" << (int)data[3] << std::endl;
+				std::cout << "EdgeID : " <<pickedID << std::endl;
+//				std::vector<int>::iterator it;
+				bool exists = false;
+				for (int i=0; i<pickedIDs.size(); i++) {
+					if ( pickedIDs[i] == pickedID-0x00ff0000) {
+						pickedIDs.erase(pickedIDs.begin()+i);
+						exists = true;
+						break;
+					}
+				}
+					
+//				it = std::find(pickedIDs.begin(), pickedIDs.end(), pickedID);
+//				if (it != pickedIDs.end())
+//					pickedIDs.erase(pickedIDs.begin()+*it);
+//				else
+//					pickedIDs.push_back(pickedID);
+				if (!exists)
+					pickedIDs.push_back(pickedID);
+			}
+		}
+		for (int i : pickedIDs)
+			std::cout << i << " " ;
+		std::cout<< std::endl;
 	}
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
 	{
@@ -132,22 +163,20 @@ void InputHandler::motion(GLFWwindow* window, double x, double y) {
 	}*/
 	
 	glFlush();
-		glFinish();
-		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-		unsigned char data[4];
+	glFinish();
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	unsigned char data[4];
 //		int data[4];
-		glReadPixels(x, 1024-y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &data);
-//		std::cout << "r:" << (int)data[0] << ", g:" << (int)data[1] << ", b:" << (int)data[2] << ", a:" << (int)data[3] << std::endl;
-//		int pickedID = (int)data[0] + (int)data[1]*256 + (int)data[2]*256*256;
-		int pickedID = ((data[0] + data[1]*256 + data[2]*256*256) & lastID) &0x00ffffff;
-//		if (pickedID == 0x00FFFFFF) {
-		if (pickedID == lastID) {
+	glReadPixels(x, 1024-y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &data);
+	pickedID = ((data[0] + data[1]*256 + data[2]*256*256)) &0x00ffffff;
+	if (pickedID == 0x00ffffff) {
 //			std::cout << pickedID << ": background" << std::endl;
 //			lefthold = true;
-		}
-		else {
-			if ((int)data[3] == 255) {
-					std::cout << "r:" << (int)data[0] << ", g:" << (int)data[1] << ", b:" << (int)data[2] << ", a:" << (int)data[3] << std::endl;
+//		pickedID = -1;
+	}
+	else {
+		if ((int)data[3] == 255) {
+			std::cout << "r:" << (int)data[0] << ", g:" << (int)data[1] << ", b:" << (int)data[2] << ", a:" << (int)data[3] << std::endl;
 			std::cout << "EdgeID : " <<pickedID << std::endl;
 		}
 	}
@@ -225,7 +254,12 @@ void InputHandler::renderGeometries() {
 	renderEngine->assignBuffers(cube);
 	renderEngine->updateBuffers(cube);
 	stuff.push_back(&cube);*/
+//	glDisable(GL_MULTISAMPLE);  
 	for (Geometry* g : stuff) {
+		g->unhighlightEdge();
+		for(int i : pickedIDs)
+			if (i >= 0)
+				g->highlightEdge(i);
 //		renderEngine->assignBuffers(*g);
 		renderEngine->updateBuffers(*g);
 	}

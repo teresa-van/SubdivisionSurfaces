@@ -1,5 +1,6 @@
 #include "Geometry.h"
 #include <cmath>
+#include <algorithm>
 
 Geometry::Geometry() {
 	drawMode = GL_TRIANGLES;
@@ -161,11 +162,40 @@ void Geometry::makeMesh(std::vector<Face*> faces) {
 //		colours.push_back(glm::vec3(1.0f, 0.0f, 0.0f));
 		colours.push_back(glm::vec3(r/255.0f,g/255.0f,b/255.0f));
 		colours.push_back(glm::vec3(r/255.0f,g/255.0f,b/255.0f));
+		colours1.push_back(glm::vec3(r/255.0f,g/255.0f,b/255.0f));
+		colours1.push_back(glm::vec3(r/255.0f,g/255.0f,b/255.0f));
+//		colours0.push_back(glm::vec3(0.5f, 0.5f, 0.5f));
+//		colours0.push_back(glm::vec3(0.5f, 0.5f, 0.5f));
+
 //		colours.push_back(glm::vec3(1.0f,0.0f,0.0f));
 	}
 }
 	glLineWidth(3.0f);
 	drawMode = GL_LINES;
+}
+
+void Geometry::highlightEdge(int eID) {
+	int r = (eID & 0x000000FF) >> 0;
+	int g = (eID & 0x0000FF00) >> 8;
+	int b = (eID & 0x00FF0000) >> 16;
+	glm::vec3 colID = glm::vec3(r/255.0f,g/255.0f,b/255.0f);
+/*	int ra = ((eID+0x0000ff00) & 0x000000FF) >> 0;
+	int ga = ((eID+0x0000ff00) & 0x0000FF00) >> 8;
+	int ba = ((eID+0x0000ff00) & 0x00FF0000) >> 16;
+	glm::vec3 colIDa = glm::vec3(ra/255.0f,ga/255.0f,ba/255.0f);
+	*/
+	std::replace(colours.begin(), colours.end(), colID, colID+glm::vec3(0.0f,0.0f,1.0f));
+}
+void Geometry::unhighlightEdge() {
+	
+	colours = colours1;
+}
+void Geometry::unhighlightEdge(int eID) {
+	int r = (eID & 0x000000FF) >> 0;
+	int g = (eID & 0x0000FF00) >> 8;
+	int b = (eID & 0x00FF0000) >> 16;
+	glm::vec3 colID = glm::vec3(r/255.0f,g/255.0f,b/255.0f);
+	std::replace(colours.begin(), colours.end(), colID, colID-glm::vec3(0.0f,0.0f,1.0f));
 }
 
 void Geometry::makePoint(glm::vec3 v) {

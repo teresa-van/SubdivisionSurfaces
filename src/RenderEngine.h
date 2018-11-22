@@ -23,6 +23,8 @@ public:
 	void updateBuffers(Geometry& object);
 	void deleteBuffers(Geometry& object);
 	void setWindowSize(int width, int height);
+	
+	void initializeFBO();
 
 private:
 	GLFWwindow* window;
@@ -30,5 +32,9 @@ private:
 	GLuint mainProgram;
 
 	glm::mat4 ortho;
+	
+	GLuint fbo = 0;
+	GLuint renderedTexture;
+	GLuint depthRenderBuffer;
 };
 

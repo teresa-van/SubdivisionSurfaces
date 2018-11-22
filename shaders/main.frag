@@ -1,6 +1,7 @@
 #version 430 core
 
 out vec4 colour;
+
 in vec3 C;
 uniform vec4 PickingColor;
 void main(void) {    	
