@@ -7,7 +7,12 @@ Geometry::Geometry() {
 	vao = 0;
 	vertexBuffer = 0;
 	colourBuffer = 0;
+	textureBuffer = 0;
 	modelMatrix = glm::mat4(1.f);
+	std::vector<glm::vec2> sp = {
+		glm::vec2(0.0f,0.0f), glm::vec2(0.0f,1024.0f), glm::vec2(1024.0f,0.0f), 
+		glm::vec2(1024.0f,0.0f), glm::vec2(0.0f,1024.0f), glm::vec2(1024.0f,1024.0f)};
+	uvs = sp;
 }
 
 void Geometry::makeCube(glm::vec3 pos, float w, float h, float d) {
@@ -170,7 +175,7 @@ void Geometry::makeMesh(std::vector<Face*> faces) {
 //		colours.push_back(glm::vec3(1.0f,0.0f,0.0f));
 	}
 }
-	glLineWidth(3.0f);
+	glLineWidth(160.0f);
 	drawMode = GL_LINES;
 }
 
@@ -197,6 +202,12 @@ void Geometry::unhighlightEdge(int eID) {
 	glm::vec3 colID = glm::vec3(r/255.0f,g/255.0f,b/255.0f);
 	std::replace(colours.begin(), colours.end(), colID, colID-glm::vec3(0.0f,0.0f,1.0f));
 }
+/*
+void Geometry::makeFBO(std::vector<glm::vec3> screenPoints) {
+	for (glm::vec3 p : screenPoints) 
+		verts.push_back(p);
+	drawMode = GL_TRIANGLES;
+}*/
 
 void Geometry::makePoint(glm::vec3 v) {
 	verts.push_back(v);

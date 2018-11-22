@@ -33,7 +33,9 @@ private:
 
 	glm::mat4 ortho;
 	
+	Geometry *fbogeo;
 	GLuint fbo = 0;
+	GLuint fbo_vao;
 	GLuint renderedTexture;
 	GLuint depthRenderBuffer;
 };

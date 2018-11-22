@@ -42,9 +42,11 @@ public:
 	GLuint vao;
 	GLuint vertexBuffer;
 	GLuint colourBuffer;
+	GLuint textureBuffer;
 //	GLuint colourBuffer0;
 	std::vector<glm::vec3> verts;
 	std::vector<glm::vec3> colours;
+	std::vector<glm::vec2> uvs;
 //	std::vector<glm::vec3> colours0;
 	std::vector<glm::vec3> colours1;
 	glm::mat4 modelMatrix;
@@ -63,6 +65,7 @@ public:
 	void highlightEdge(int eID);
 	void unhighlightEdge(int eID);
 	void unhighlightEdge();
+//	void makeFBO(std::vector<glm::vec2> screenPoints);
 	
 	static std::map<int, HalfEdge*> EdgeIDs;
 };
