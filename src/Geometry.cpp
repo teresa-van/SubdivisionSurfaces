@@ -198,6 +198,12 @@ void Geometry::unhighlightEdge(int eID) {
 	std::replace(colours.begin(), colours.end(), colID, colID-glm::vec3(0.0f,0.0f,1.0f));
 }
 
+void Geometry::makeFBO(std::vector<glm::vec3> sp) {
+	for (glm::vec3 p : sp)
+		verts.push_back(p);
+	drawMode = GL_TRIANGLES;
+}
+
 void Geometry::makePoint(glm::vec3 v) {
 	verts.push_back(v);
 	colours.push_back(glm::vec3(0.0f,0.0f,1.0f));

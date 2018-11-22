@@ -11,7 +11,15 @@
 
 #include "Geometry.h"
 #include "ShaderTools.h"
-
+/*
+struct MyTexture {
+	GLuint textureID;
+	GLuint target;
+	GLuint fboID;
+	// initialize object names to zero (OpenGL reserved value)
+	MyTexture();
+};
+*/
 class RenderEngine {
 
 public:
@@ -33,6 +41,8 @@ private:
 
 	glm::mat4 ortho;
 	
+//	GLuint fboTexture;
+	Geometry *fbogeo;
 	GLuint fbo = 0;
 	GLuint renderedTexture;
 	GLuint depthRenderBuffer;

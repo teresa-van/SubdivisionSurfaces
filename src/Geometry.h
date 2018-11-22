@@ -64,6 +64,8 @@ public:
 	void unhighlightEdge(int eID);
 	void unhighlightEdge();
 	
+	void makeFBO(std::vector<glm::vec3> sp);
+	
 	static std::map<int, HalfEdge*> EdgeIDs;
 };
 

@@ -25,8 +25,22 @@ void RenderEngine::render(const std::vector<Geometry*>& objects, glm::mat4 view,
 	glUseProgram(mainProgram);
 
 	for (const Geometry* o : objects) {
+		glm::mat4 modelView = view * o->modelMatrix;
 		
-		
+		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+	
+//		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+//		glClear(GL_COLOR_BUFFER_BIT);
+		glBindTexture(GL_TEXTURE_2D, renderedTexture);
+		glUniform1i(glGetUniformLocation(mainProgram, "depth"), z);
+//		glUniform3fv(glGetUniformLocation(mainProgram, "position"), 1, glm::value_ptr(pos));
+		glUniformMatrix4fv(glGetUniformLocation(mainProgram, "modelView"), 1, GL_FALSE, glm::value_ptr(modelView));
+		glUniformMatrix4fv(glGetUniformLocation(mainProgram, "ortho"), 1, GL_FALSE, glm::value_ptr(ortho));
+		glBindVertexArray(fbogeo->vao);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+		glBindVertexArray(0);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+/*
 		glBindVertexArray(o->vao);
 //		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 		glm::mat4 modelView = view * o->modelMatrix;
@@ -36,7 +50,7 @@ void RenderEngine::render(const std::vector<Geometry*>& objects, glm::mat4 view,
 		glUniformMatrix4fv(glGetUniformLocation(mainProgram, "ortho"), 1, GL_FALSE, glm::value_ptr(ortho));
 		glDrawArrays(o->drawMode, 0, o->verts.size());
 //		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glBindVertexArray(0);
+		glBindVertexArray(0);*/
 	}
 }
 
@@ -109,8 +123,12 @@ void RenderEngine::initializeFBO() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, renderedTexture, 0);
-
+    
+    std::vector<glm::vec2> sp = {
+		glm::vec3(0.0f,0.0f,0.0f), glm::vec3(0.0f, 1024.0f, 0.0f), glm::vec3(1024.0f, 0.0f, 0.0f), 
+		glm::vec3(1024.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1024.0f, 0.0f), glm::vec3(1024.0f, 1024.0f, 0.0f) };
+	fbogeo->makeFBO(sp);
 // Set the list of draw buffers.
-GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
-glDrawBuffers(1, DrawBuffers);
+//GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
+//glDrawBuffers(1, DrawBuffers);
 }
