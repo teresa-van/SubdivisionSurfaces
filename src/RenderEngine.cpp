@@ -16,6 +16,7 @@ RenderEngine::RenderEngine(GLFWwindow* window) : window(window) {
 	glEnable(GL_LINE_SMOOTH);
 	glPointSize(5.0f);
 	glClearColor(1.0f, 1.0f, 1.0f, 0.0);
+	
 }
 
 // Called to render provided objects under view matrix
@@ -27,27 +28,41 @@ void RenderEngine::render(const std::vector<Geometry*>& objects, glm::mat4 view,
 	glUniform1i(glGetUniformLocation(mainProgram, "ourTexture"), 0);
 	glActiveTexture(GL_TEXTURE0 + 0);
 	glBindTexture(GL_TEXTURE_2D, renderedTexture);
-
+//std::cout << "dfasdfasdfsadfsa" << std::endl;
 	for (const Geometry* o : objects) {
+
+glm::mat4 modelView = view * o->modelMatrix;
+		// DRAW TO FB
+		glBindTexture(GL_TEXTURE_2D, renderedTexture);
+		glUniform1i(glGetUniformLocation(mainProgram, "depth"), z);
+//		glUniform3fv(glGetUniformLocation(mainProgram, "position"), 1, glm::value_ptr(pos));
+		glUniformMatrix4fv(glGetUniformLocation(mainProgram, "modelView"), 1, GL_FALSE, glm::value_ptr(modelView));
+		glUniformMatrix4fv(glGetUniformLocation(mainProgram, "ortho"), 1, GL_FALSE, glm::value_ptr(ortho));
+		glBindVertexArray(o->vao);
+		glDrawArrays(o->drawMode, 0, o->verts.size());
 
 		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 		glBindTexture(GL_TEXTURE_2D, renderedTexture);
 		
-		glm::mat4 modelView = view * o->modelMatrix;
+//		glm::mat4 modelView = view * o->modelMatrix;
 		glUniform1i(glGetUniformLocation(mainProgram, "depth"), z);
 //		glUniform3fv(glGetUniformLocation(mainProgram, "position"), 1, glm::value_ptr(pos));
 		glUniformMatrix4fv(glGetUniformLocation(mainProgram, "modelView"), 1, GL_FALSE, glm::value_ptr(modelView));
 		glUniformMatrix4fv(glGetUniformLocation(mainProgram, "ortho"), 1, GL_FALSE, glm::value_ptr(ortho));
-		glDrawArrays(fbogeo->drawMode, 0, 6);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
 		glBindVertexArray(0);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-
-//		glBindTexture(GL_TEXTURE_2D, oldText.textureID);
-//		glBindVertexArray(o->vao);
-//		glBindFramebuffer(GL_FRAMEBUFFER, o->vao);
-/*		glm::mat4 modelView = view * o->modelMatrix;
+		
+		
+		glBindVertexArray(0);
+		
+		
+		
+		glUseProgram(0);
+	
+/*		glBindVertexArray(o->vao);
+		glm::mat4 modelView = view * o->modelMatrix;
 		glUniform1i(glGetUniformLocation(mainProgram, "depth"), z);
 //		glUniform3fv(glGetUniformLocation(mainProgram, "position"), 1, glm::value_ptr(pos));
 		glUniformMatrix4fv(glGetUniformLocation(mainProgram, "modelView"), 1, GL_FALSE, glm::value_ptr(modelView));

@@ -198,10 +198,15 @@ void Program::mainLoop() {
 			mesh->modelMatrix = glm::rotate(mesh->modelMatrix, glm::radians(90.0f), glm::vec3(-1.0f,0.0f,0.0f));
 				
 			renderEngine->assignBuffers(*mesh);
+			renderEngine->updateBuffers(*mesh);
 			InputHandler::stuff.push_back(mesh);
+			renderEngine->render(InputHandler::stuff,glm::mat4(1.f),0);
 
 	InputHandler::setUp(renderEngine);	
 //std::cout << "DFASDFDSA" << std::endl;
+/*	for (Geometry* g : InputHandler::stuff) 		
+		renderEngine->updateBuffers(*g);
+	renderEngine->render(InputHandler::stuff, glm::mat4(1.f), 1);*/
 	while(!glfwWindowShouldClose(window)) {
 		glfwPollEvents();
 //		renderEngine->render(objects, glm::mat4(1.f), 1);
