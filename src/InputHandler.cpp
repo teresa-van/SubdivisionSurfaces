@@ -15,7 +15,7 @@ void InputHandler::setUp(RenderEngine* renderEngine) {
 //	rotAxis.makeLine(r0, r1);
 	cameraController(glm::vec3(0.0f, 0.0f, 0.0f));
 	renderGeometries();
-	
+
 }
 
 // Callback for key presses
@@ -26,36 +26,36 @@ void InputHandler::key(GLFWwindow* window, int key, int scancode, int action, in
 		exit(0);
 	}
 	if (key == GLFW_KEY_LEFT_SHIFT) {
-		if (action == GLFW_PRESS||action == GLFW_REPEAT) 
+		if (action == GLFW_PRESS||action == GLFW_REPEAT)
 			multiPick = true;
 		else
 			multiPick = false;
 	}
-	if (key == GLFW_KEY_A && action == GLFW_PRESS) 
+	if (key == GLFW_KEY_A && action == GLFW_PRESS)
 		moveLeft = true;
-	if (key == GLFW_KEY_S && action == GLFW_PRESS) 
+	if (key == GLFW_KEY_S && action == GLFW_PRESS)
 		moveBack = true;
-	if (key == GLFW_KEY_D && action == GLFW_PRESS) 
+	if (key == GLFW_KEY_D && action == GLFW_PRESS)
 		moveRight = true;
-	if (key == GLFW_KEY_W && action == GLFW_PRESS) 
+	if (key == GLFW_KEY_W && action == GLFW_PRESS)
 		moveForward = true;
-	if (key == GLFW_KEY_R && action == GLFW_PRESS) 
+	if (key == GLFW_KEY_R && action == GLFW_PRESS)
 		moveUp = true;
-	if (key == GLFW_KEY_F && action == GLFW_PRESS) 
+	if (key == GLFW_KEY_F && action == GLFW_PRESS)
 		moveDown = true;
-	if (key == GLFW_KEY_A && action == GLFW_RELEASE) 
+	if (key == GLFW_KEY_A && action == GLFW_RELEASE)
 		moveLeft = false;
-	if (key == GLFW_KEY_S && action == GLFW_RELEASE) 
+	if (key == GLFW_KEY_S && action == GLFW_RELEASE)
 		moveBack = false;
-	if (key == GLFW_KEY_D && action == GLFW_RELEASE) 
+	if (key == GLFW_KEY_D && action == GLFW_RELEASE)
 		moveRight = false;
-	if (key == GLFW_KEY_W && action == GLFW_RELEASE) 
+	if (key == GLFW_KEY_W && action == GLFW_RELEASE)
 		moveForward = false;
-	if (key == GLFW_KEY_R && action == GLFW_RELEASE) 
+	if (key == GLFW_KEY_R && action == GLFW_RELEASE)
 		moveUp = false;
-	if (key == GLFW_KEY_F && action == GLFW_RELEASE) 
+	if (key == GLFW_KEY_F && action == GLFW_RELEASE)
 		moveDown = false;
-	
+
 /*	if (key == GLFW_KEY_A && (action == GLFW_PRESS||action == GLFW_REPEAT)) {
 //			dx = dx+0.1f;
 		camPos -= glm::vec3(sin(thetaX-M_PI/2.0f),0,cos(thetaX-M_PI/2.0f))*0.1f;
@@ -75,12 +75,12 @@ void InputHandler::key(GLFWwindow* window, int key, int scancode, int action, in
 	if (key == GLFW_KEY_R && (action == GLFW_PRESS||action == GLFW_REPEAT)) {
 //			dy = dy+0.1f;
 		camPos += glm::vec3(0.0f,0.1f,0.0f);
-		
+
 	}
 	if (key == GLFW_KEY_F && (action == GLFW_PRESS||action == GLFW_REPEAT)) {
 //			dy = dy-0.1f;
 		camPos -= glm::vec3(0.0f,0.1f,0.0f);
-		
+
 	}*/
 	renderGeometries();
 
@@ -92,25 +92,25 @@ void InputHandler::mouse(GLFWwindow* window, int button, int action, int mods) {
 	glfwGetCursorPos(window, &x, &y);
 	xclick = x;//(-512+x)/512;
 	yclick = y;//(512-y)/512;
-	
+
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
-	{	
+	{
 	//		std::cout << xclick<< "," << yclick << std::endl;
-		if (!multiPick) 
+		if (!multiPick)
 			pickedIDs.clear();
 		glFlush();
 		glFinish();
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 		unsigned char data[4];
 	//		int data[4];
-		
+
 		glReadPixels(x, 1024-y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &data);
 		pickedID = ((data[0] + data[1]*256 + data[2]*256*256)) &0x00ffffff;
 		if (pickedID == 0x00ffffff) {
 	//			std::cout << pickedID << ": background" << std::endl;
 			lefthold = true;
 			pickedID = -1;
-			
+
 		}
 		else {
 			if ((int)data[3] == 255) {
@@ -125,7 +125,7 @@ void InputHandler::mouse(GLFWwindow* window, int button, int action, int mods) {
 						break;
 					}
 				}
-					
+
 //				it = std::find(pickedIDs.begin(), pickedIDs.end(), pickedID);
 //				if (it != pickedIDs.end())
 //					pickedIDs.erase(pickedIDs.begin()+*it);
@@ -153,7 +153,7 @@ void InputHandler::mouse(GLFWwindow* window, int button, int action, int mods) {
 // Callback for mouse motion
 void InputHandler::motion(GLFWwindow* window, double x, double y) {
 /*	double x_raw, y_raw, x_ogl, y_ogl;//, dx0,dy0;
-	if (lefthold) {	
+	if (lefthold) {
 		glfwGetCursorPos(window, &x_raw, &y_raw);
 		x_ogl = (-256+x_raw)/256;
 		y_ogl = (256-y_raw)/256;
@@ -161,14 +161,31 @@ void InputHandler::motion(GLFWwindow* window, double x, double y) {
 		thetaY = oldyclick+y_ogl-yclick;
 		renderGeometries();
 	}*/
-	
+
 	glFlush();
 	glFinish();
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	// glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	unsigned char data[4];
 //		int data[4];
 	glReadPixels(x, 1024-y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &data);
-	pickedID = ((data[0] + data[1]*256 + data[2]*256*256)) &0x00ffffff;
+	// int *data = *renderEngine->pixels + 1024*y + x;
+	// pickedID = ((data[0] + data[1]*256 + data[2]*256*256)) &0x00ffffff;
+
+	// GLubyte *pixels = renderEngine->pixels;
+	//
+	// GLubyte r, g, b, a; // or GLubyte r, g, b, a;
+	// // size_t x, y; // line and column of the pixel
+	// size_t size = 1024 * 4; // elements per line = 256 * "RGBA"
+	// size_t row = y * size;
+	// size_t col = x * 4;
+	//
+	// r = pixels[row + col];
+	// g = pixels[row + col + 1];
+	// b = pixels[row + col + 2];
+	// a = pixels[row + col + 3];
+	//
+	// std::cout << "r:" << (int)r << ", g:" << (int)g << ", b:" << (int)b << ", a:" << (int)a << std::endl;
+	pickedID = *renderEngine->pixels + 1024*y + x;
 	if (pickedID == 0x00ffffff) {
 //			std::cout << pickedID << ": background" << std::endl;
 //			lefthold = true;
@@ -176,21 +193,22 @@ void InputHandler::motion(GLFWwindow* window, double x, double y) {
 	}
 	else {
 		if ((int)data[3] == 255) {
-			std::cout << "r:" << (int)data[0] << ", g:" << (int)data[1] << ", b:" << (int)data[2] << ", a:" << (int)data[3] << std::endl;
-			std::cout << "EdgeID : " <<pickedID << std::endl;
+			// std::cout << "r:" << (int)data[0] << ", g:" << (int)data[1] << ", b:" << (int)data[2] << ", a:" << (int)data[3] << std::endl;
+			std::cout << "EdgeID : " << pickedID << std::endl;
+			// std::cout << "Edge ID: " << data << "\n";
 		}
 	}
-	
+
 	glm::vec2 newPos = glm::vec2(x/256, -y/256)*2.f - glm::vec2(1.f);
 	glm::vec2 diff = newPos - mousePos;
 	float dt = diff.x;
 	float dp = diff.y;
-		
-	if (lefthold) {	
+
+	if (lefthold) {
 //		glm::vec3 oldCamDir = camDir;
 		cameraController(glm::vec3(-dp, dt, 0.0f));
 		renderGeometries();
-	}	
+	}
 	mousePos = newPos;
 }
 
@@ -254,7 +272,7 @@ void InputHandler::renderGeometries() {
 	renderEngine->assignBuffers(cube);
 	renderEngine->updateBuffers(cube);
 	stuff.push_back(&cube);*/
-//	glDisable(GL_MULTISAMPLE);  
+//	glDisable(GL_MULTISAMPLE);
 	for (Geometry* g : stuff) {
 		g->unhighlightEdge();
 		for(int i : pickedIDs)
