@@ -30,7 +30,7 @@ void Program::setupWindow() {
 		exit(EXIT_FAILURE);
 	}
 
-	
+
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 //	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
@@ -78,10 +78,10 @@ int InputHandler::pickedID = -1;
 std::vector<int> InputHandler::pickedIDs;
 bool InputHandler::multiPick = false;
 
-std::map<int, HalfEdge*> Geometry::EdgeIDs;
+std::map<int, Face*> Geometry::EdgeIDs;
 
 void Program::mainLoop() {
-	
+
 	std::vector<glm::vec3> vertices;
 	std::vector<glm::vec3> vnormals;
 	std::vector<std::vector<int>> faces;
@@ -94,7 +94,7 @@ void Program::mainLoop() {
 	std::vector<Face*> fList;
 	std::map<std::pair<int, int>, HalfEdge*> Edges;
 //	std::map<int, HalfEdge*> EdgeIDs;
-	
+
 	for (glm::vec3 v : vertices) {
 		Vertex* p = new Vertex();
 		p->v = v;
@@ -113,7 +113,7 @@ void Program::mainLoop() {
 //	for (int k=1000; k<1006; k++) {
 //		std::vector<int> face = faces[k];
 //	std::vector<int> face = faces[1000];
-		
+
 //		Face * f = new Face();
 		for (int i=0; i<face.size(); i++) {
 			int u, v;
@@ -125,8 +125,9 @@ void Program::mainLoop() {
 			std::pair<int,int> uv = std::make_pair(face[u],face[v]);
 			Edges[uv] = new HalfEdge();
 			Edges[uv]->sharpness = 0.0f;
-			Edges[uv]->id = -1;
-						
+			// Edges[uv]->id = -1;
+			fList[faceIndex]->id = -1;
+
 //			Edges[uv]->f = f;
 			Edges[uv]->f = fList[faceIndex];
 //			Vertex *v_u = new Vertex();
@@ -148,35 +149,35 @@ void Program::mainLoop() {
 				v = 0;
 			else
 				v = u+1;
-				
+
 			unext = u + 1;
 			vnext = v + 1;
-			
+
 			if (u >= face.size() - 1) unext = 0;
 			if (v >= face.size() - 1) vnext = 0;
-			
+
 			std::pair<int,int> uv = std::make_pair(face[u],face[v]);
 			std::pair<int,int> vu = std::make_pair(uv.second,uv.first);
 			std::pair<int,int> uvnext = std::make_pair(face[unext],face[vnext]);
-			
 
-			
+
+
 //			std::cout << u << "," << v << "\t" << unext << "," << vnext << std::endl;
 			Edges[uv]->nextEdge = Edges[uvnext];
 //			std::cout<< " : " << Edges.end() << std::endl;
 			if (Edges.find(vu) != Edges.end()) {
 				Edges[uv]->pairEdge = Edges[vu];
 				Edges[vu]->pairEdge = Edges[uv];
-				Edges[uv]->id = Edges[vu]->id;
-				
+				// Edges[uv]->id = Edges[vu]->id;
+
 //				std::cout << Edges[vu]->id << std::endl;
 			}
-			if (Edges[uv]->id == -1) {
-				Edges[uv]->id = idCounter;
-				Geometry::EdgeIDs[idCounter] = Edges[uv];
-				idCounter++;
-//				idCounter = idCounter << 1;
-			}
+// 			if (Edges[uv]->id == -1) {
+// 				Edges[uv]->id = idCounter;
+// 				Geometry::EdgeIDs[idCounter] = Edges[uv];
+// 				idCounter++;
+// //				idCounter = idCounter << 1;
+// 			}
 //			std::cout <<"dfasdfsd" << std::endl;
 //			else
 //				std::cout << Edges[uv]->id << std::endl;
@@ -184,10 +185,16 @@ void Program::mainLoop() {
 			he->makeEdge(Edges[uv]->start->v, Edges[uv]->nextEdge->start->v);
 			he->modelMatrix = glm::rotate(he->modelMatrix, glm::radians(180.0f), glm::vec3(0.0f,1.0f,0.0f));
 			he->modelMatrix = glm::rotate(he->modelMatrix, glm::radians(90.0f), glm::vec3(-1.0f,0.0f,0.0f));
-				
+
 			renderEngine->assignBuffers(*he);
 			InputHandler::stuff.push_back(he);*/
-			
+
+		// }
+		// if (Edges[uv]->id == -1) {
+			fList[faceIndex]->id = idCounter;
+			Geometry::EdgeIDs[idCounter] = fList[faceIndex];
+			idCounter++;
+//				idCounter = idCounter << 1;
 		}
 		faceIndex++;
 	}
@@ -196,15 +203,15 @@ void Program::mainLoop() {
 			mesh->makeMesh(fList);
 			mesh->modelMatrix = glm::rotate(mesh->modelMatrix, glm::radians(180.0f), glm::vec3(0.0f,1.0f,0.0f));
 			mesh->modelMatrix = glm::rotate(mesh->modelMatrix, glm::radians(90.0f), glm::vec3(-1.0f,0.0f,0.0f));
-				
+
 			renderEngine->assignBuffers(*mesh);
 			renderEngine->updateBuffers(*mesh);
 			InputHandler::stuff.push_back(mesh);
 			renderEngine->render(InputHandler::stuff,glm::mat4(1.f),0);
 
-	InputHandler::setUp(renderEngine);	
+	InputHandler::setUp(renderEngine);
 //std::cout << "DFASDFDSA" << std::endl;
-/*	for (Geometry* g : InputHandler::stuff) 		
+/*	for (Geometry* g : InputHandler::stuff)
 		renderEngine->updateBuffers(*g);
 	renderEngine->render(InputHandler::stuff, glm::mat4(1.f), 1);*/
 	while(!glfwWindowShouldClose(window)) {

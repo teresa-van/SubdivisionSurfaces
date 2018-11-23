@@ -1,6 +1,7 @@
 #include "Geometry.h"
 #include <cmath>
 #include <algorithm>
+#include <iostream>
 
 Geometry::Geometry() {
 	drawMode = GL_TRIANGLES;
@@ -10,7 +11,7 @@ Geometry::Geometry() {
 	textureBuffer = 0;
 	modelMatrix = glm::mat4(1.f);
 	std::vector<glm::vec2> sp = {
-		glm::vec2(0.0f,0.0f), glm::vec2(0.0f,1024.0f), glm::vec2(1024.0f,0.0f), 
+		glm::vec2(0.0f,0.0f), glm::vec2(0.0f,1024.0f), glm::vec2(1024.0f,0.0f),
 		glm::vec2(1024.0f,0.0f), glm::vec2(0.0f,1024.0f), glm::vec2(1024.0f,1024.0f)};
 	uvs = sp;
 }
@@ -24,7 +25,7 @@ void Geometry::makeCube(glm::vec3 pos, float w, float h, float d) {
 	glm::vec3 p5 = pos+glm::vec3(-w,h,-d);
 	glm::vec3 p6 = pos+glm::vec3(w,-h,-d);
 	glm::vec3 p7 = pos+glm::vec3(-w,-h,-d);
-	
+
 	verts.push_back(p0);
 	verts.push_back(p1);
 	verts.push_back(p2);
@@ -49,42 +50,42 @@ void Geometry::makeCube(glm::vec3 pos, float w, float h, float d) {
 	verts.push_back(p6);
 	verts.push_back(p3);
 	verts.push_back(p7);*/
-	
+
 /*	verts.push_back(p0);
 	verts.push_back(p1);
 	verts.push_back(p2);
 	verts.push_back(p1);
 	verts.push_back(p3);
 	verts.push_back(p2);
-	
+
 	verts.push_back(p4);
 	verts.push_back(p5);
 	verts.push_back(p6);
 	verts.push_back(p5);
 	verts.push_back(p7);
 	verts.push_back(p6);
-	
+
 	verts.push_back(p1);
 	verts.push_back(p5);
 	verts.push_back(p3);
 	verts.push_back(p5);
 	verts.push_back(p7);
 	verts.push_back(p3);
-	
+
 	verts.push_back(p0);
 	verts.push_back(p4);
 	verts.push_back(p2);
 	verts.push_back(p4);
 	verts.push_back(p6);
 	verts.push_back(p2);
-	
+
 	verts.push_back(p0);
 	verts.push_back(p1);
 	verts.push_back(p4);
 	verts.push_back(p1);
 	verts.push_back(p5);
 	verts.push_back(p4);
-	
+
 	verts.push_back(p2);
 	verts.push_back(p3);
 	verts.push_back(p6);
@@ -94,7 +95,7 @@ void Geometry::makeCube(glm::vec3 pos, float w, float h, float d) {
 	*/
 	for (int i=0; i<24; i++)
 		colours.push_back(glm::vec3(0.0f,1.0f,0.0f));
-	
+
 //	drawMode = GL_TRIANGLES;
 	drawMode = GL_LINE_LOOP;
 //	glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
@@ -148,35 +149,69 @@ void Geometry::makeFace(Face* f) {
 void Geometry::makeMesh(std::vector<Face*> faces) {
 //			std::vector<glm::vec3> facePoints;
 	for (Face* f : faces) {
-	std::vector<HalfEdge*> faceEdges;
-	HalfEdge* curEdge = f->e;
-	do {
-//				facePoints.push_back(curEdge->start->v);
-		faceEdges.push_back(curEdge);
-		curEdge = curEdge->nextEdge;
-	}
-	while (curEdge != f->e);
-//	for (glm::vec3 p : points) {
-	for (HalfEdge* h : faceEdges) {
-		verts.push_back(h->start->v);
-		verts.push_back(h->nextEdge->start->v);
-		int r = (h->id & 0x000000FF) >> 0;
-		int g = (h->id & 0x0000FF00) >> 8;
-		int b = (h->id & 0x00FF0000) >> 16;
-//		colours.push_back(glm::vec3(1.0f, 0.0f, 0.0f));
-//		colours.push_back(glm::vec3(1.0f, 0.0f, 0.0f));
-		colours.push_back(glm::vec3(r/255.0f,g/255.0f,b/255.0f));
-		colours.push_back(glm::vec3(r/255.0f,g/255.0f,b/255.0f));
-		colours1.push_back(glm::vec3(r/255.0f,g/255.0f,b/255.0f));
-		colours1.push_back(glm::vec3(r/255.0f,g/255.0f,b/255.0f));
-//		colours0.push_back(glm::vec3(0.5f, 0.5f, 0.5f));
-//		colours0.push_back(glm::vec3(0.5f, 0.5f, 0.5f));
+		std::vector<HalfEdge*> faceEdges;
+		HalfEdge* curEdge = f->e;
+		do {
+	//				facePoints.push_back(curEdge->start->v);
+			faceEdges.push_back(curEdge);
+			curEdge = curEdge->nextEdge;
+		}
+		while (curEdge != f->e);
+	//	for (glm::vec3 p : points) {
+		int numEdges = faceEdges.size();
+		// std::cout << numEdges << "\n";
+		int r = (f->id & 0x000000FF) >> 0;
+		int g = (f->id & 0x0000FF00) >> 8;
+		int b = (f->id & 0x00FF0000) >> 16;
+		if (numEdges == 4)
+		{
+			verts.push_back(faceEdges[0]->start->v);
+			verts.push_back(faceEdges[1]->start->v);
+			verts.push_back(faceEdges[2]->start->v);
 
-//		colours.push_back(glm::vec3(1.0f,0.0f,0.0f));
+			verts.push_back(faceEdges[0]->start->v);
+			verts.push_back(faceEdges[2]->start->v);
+			verts.push_back(faceEdges[3]->start->v);
+
+			for (int i = 0; i < 6; i++)
+			{
+				// colours.push_back(glm::vec3(1.f, 0.f, 0.f));
+				// colours1.push_back(glm::vec3(1.f, 0.f, 0.f));
+
+				colours.push_back(glm::vec3(r/255.0f,g/255.0f,b/255.0f));
+				colours1.push_back(glm::vec3(r/255.0f,g/255.0f,b/255.0f));
+			}
+		}
+		else
+		{
+			// verts.push_back(faceEdges[0]->start->v);
+			// verts.push_back(faceEdges[1]->start->v);
+			// verts.push_back(faceEdges[2]->start->v);
+			// for (int i = 0; i < 3; i++)
+			// {
+			// 	// colours.push_back(glm::vec3(1.f, 0.f, 0.f));
+			// 	// colours1.push_back(glm::vec3(1.f, 0.f, 0.f));
+			//
+			// 	colours.push_back(glm::vec3(r/255.0f,g/255.0f,b/255.0f));
+			// 	colours1.push_back(glm::vec3(r/255.0f,g/255.0f,b/255.0f));
+			// }
+		}
+		// for (HalfEdge* h : faceEdges) {
+	// 		verts.push_back(h->start->v);
+	// 		verts.push_back(h->nextEdge->start->v);
+	// 		int r = (h->id & 0x000000FF) >> 0;
+	// 		int g = (h->id & 0x0000FF00) >> 8;
+	// 		int b = (h->id & 0x00FF0000) >> 16;
+	// //		colours.push_back(glm::vec3(1.0f, 0.0f, 0.0f));
+	// //		colours.push_back(glm::vec3(1.0f, 0.0f, 0.0f));
+	// 		colours.push_back(glm::vec3(r/255.0f,g/255.0f,b/255.0f));
+	// 		colours.push_back(glm::vec3(r/255.0f,g/255.0f,b/255.0f));
+	// 		colours1.push_back(glm::vec3(r/255.0f,g/255.0f,b/255.0f));
+	// 		colours1.push_back(glm::vec3(r/255.0f,g/255.0f,b/255.0f));
+		// }
 	}
-}
-	glLineWidth(160.0f);
-	drawMode = GL_LINES;
+	// glLineWidth(160.0f);
+	drawMode = GL_TRIANGLES;
 }
 
 void Geometry::highlightEdge(int eID) {
@@ -192,7 +227,7 @@ void Geometry::highlightEdge(int eID) {
 	std::replace(colours.begin(), colours.end(), colID, colID+glm::vec3(0.0f,0.0f,1.0f));
 }
 void Geometry::unhighlightEdge() {
-	
+
 	colours = colours1;
 }
 void Geometry::unhighlightEdge(int eID) {
@@ -204,7 +239,7 @@ void Geometry::unhighlightEdge(int eID) {
 }
 /*
 void Geometry::makeFBO(std::vector<glm::vec3> screenPoints) {
-	for (glm::vec3 p : screenPoints) 
+	for (glm::vec3 p : screenPoints)
 		verts.push_back(p);
 	drawMode = GL_TRIANGLES;
 }*/
@@ -233,4 +268,3 @@ void Geometry::makeEdge(glm::vec3 p0, glm::vec3 p1) {
 	colours.push_back(glm::vec3(1.0f,0.0f,0.0f));
 	drawMode = GL_LINES;
 }
-

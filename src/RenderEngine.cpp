@@ -12,11 +12,11 @@ RenderEngine::RenderEngine(GLFWwindow* window) : window(window) {
 	// Set OpenGL state
 	glEnable(GL_DEPTH_TEST);
 //	glDepthFunc(GL_LESS);
-	
-	glEnable(GL_LINE_SMOOTH);
+
+	// glEnable(GL_LINE_SMOOTH);
 	glPointSize(5.0f);
 	glClearColor(1.0f, 1.0f, 1.0f, 0.0);
-	
+
 }
 
 // Called to render provided objects under view matrix
@@ -44,7 +44,7 @@ glm::mat4 modelView = view * o->modelMatrix;
 		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 		glBindTexture(GL_TEXTURE_2D, renderedTexture);
-		
+
 //		glm::mat4 modelView = view * o->modelMatrix;
 		glUniform1i(glGetUniformLocation(mainProgram, "depth"), z);
 //		glUniform3fv(glGetUniformLocation(mainProgram, "position"), 1, glm::value_ptr(pos));
@@ -53,14 +53,14 @@ glm::mat4 modelView = view * o->modelMatrix;
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		glBindVertexArray(0);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		
-		
+
+
 		glBindVertexArray(0);
-		
-		
-		
+
+
+
 		glUseProgram(0);
-	
+
 /*		glBindVertexArray(o->vao);
 		glm::mat4 modelView = view * o->modelMatrix;
 		glUniform1i(glGetUniformLocation(mainProgram, "depth"), z);
@@ -101,7 +101,7 @@ void RenderEngine::assignBuffers(Geometry& object) {
 	glBindBuffer(GL_ARRAY_BUFFER, object.colourBuffer);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 	glEnableVertexAttribArray(1);
-	
+
 	glGenBuffers(1, &object.textureBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, object.textureBuffer);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
@@ -119,13 +119,13 @@ void RenderEngine::updateBuffers(Geometry& object) {
 	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * object.colours.size(), object.colours.data(), GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, object.textureBuffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * object.uvs.size(), object.uvs.data(), GL_STATIC_DRAW);
-	
+
 //	glBindBuffer(GL_FRAMEBUFFER, object.colourBuffer);
 //	glBufferData(GL_FRAMEBUFFER, sizeof(glm::vec3) * object.colours.size(), object.colours.data(), GL_DYNAMIC_DRAW);
 //	glBindBuffer(GL_ARRAY_BUFFER, object.colourBuffer0);
 //	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * object.colours0.size(), object.colours0.data(), GL_DYNAMIC_DRAW);
-	
-	
+
+
 }
 
 // Deletes buffers
@@ -155,9 +155,9 @@ void RenderEngine::initializeFBO() {
 	// Poor filtering. Needed !
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	
+
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, renderedTexture, 0);
-	
+
 /*	glGenRenderbuffers(1, &rbo);
     glBindRenderbuffer(GL_RENDERBUFFER, rbo);
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 1024, 1024); // use a single renderbuffer object for both a depth AND stencil buffer.
@@ -171,9 +171,9 @@ void RenderEngine::initializeFBO() {
 glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRenderbuffer);*/
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
-	
+
 //	std::vector<glm::vec2> sp = {
-//		glm::vec2(0.0f,0.0f), glm::vec2(0.0f,1024.0f), glm::vec2(1024.0f,0.0f), 
+//		glm::vec2(0.0f,0.0f), glm::vec2(0.0f,1024.0f), glm::vec2(1024.0f,0.0f),
 //		glm::vec2(1024.0f,0.0f), glm::vec2(0.0f,1024.0f), glm::vec2(1024.0f,1024.0f)
 //	fbogeo->makeFBO(sp);
 //    glBindFramebuffer(GL_FRAMEBUFFER, 0);

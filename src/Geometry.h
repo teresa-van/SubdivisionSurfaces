@@ -18,7 +18,6 @@ struct HalfEdge {
 	HalfEdge* pairEdge;
 	Vertex* start;
 	Face* f;
-	int id;
 	float sharpness;
 };
 struct Vertex {
@@ -29,6 +28,7 @@ struct Vertex {
 };
 struct Face {
 	HalfEdge* e;
+	int id;
 };
 
 
@@ -50,7 +50,7 @@ public:
 //	std::vector<glm::vec3> colours0;
 	std::vector<glm::vec3> colours1;
 	glm::mat4 modelMatrix;
-	
+
 	void makeCube(glm::vec3 pos, float w, float h, float d);
 //	void makeFace(glm::vec3 p0, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3);
 //	void makeFace(std::vector<glm::vec3> points);
@@ -61,12 +61,11 @@ public:
 //	void makeEdge(Vertex p0, Vertex p1);
 	void makeEdge(glm::vec3 p0, glm::vec3 p1);
 	void clearGeometry();
-	
+
 	void highlightEdge(int eID);
 	void unhighlightEdge(int eID);
 	void unhighlightEdge();
 //	void makeFBO(std::vector<glm::vec2> screenPoints);
-	
-	static std::map<int, HalfEdge*> EdgeIDs;
-};
 
+	static std::map<int, Face*> EdgeIDs;
+};
