@@ -108,7 +108,7 @@ void Program::mainLoop() {
 //	Face* fa = new Face();
 //		fList.push_back(fa);
 	int faceIndex = 0;
-	int idCounter = 15;
+	int idCounter = 0;
 	for (std::vector<int> face : faces) {
 //	for (int k=1000; k<1006; k++) {
 //		std::vector<int> face = faces[k];
@@ -191,11 +191,12 @@ void Program::mainLoop() {
 
 		// }
 		// if (Edges[uv]->id == -1) {
-			fList[faceIndex]->id = idCounter;
-			Geometry::EdgeIDs[idCounter] = fList[faceIndex];
-			idCounter++;
+			
 //				idCounter = idCounter << 1;
 		}
+		fList[faceIndex]->id = idCounter;
+		Geometry::EdgeIDs[idCounter] = fList[faceIndex];
+		idCounter++;
 		faceIndex++;
 	}
 			InputHandler::lastID = idCounter;

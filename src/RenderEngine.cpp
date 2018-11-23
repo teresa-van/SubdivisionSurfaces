@@ -12,7 +12,6 @@ RenderEngine::RenderEngine(GLFWwindow* window) : window(window) {
 	// Set OpenGL state
 	glEnable(GL_DEPTH_TEST);
 //	glDepthFunc(GL_LESS);
-
 	// glEnable(GL_LINE_SMOOTH);
 	glPointSize(5.0f);
 	glClearColor(1.0f, 1.0f, 1.0f, 0.0);
@@ -35,6 +34,7 @@ glm::mat4 modelView = view * o->modelMatrix;
 		// DRAW TO FB
 		glBindTexture(GL_TEXTURE_2D, renderedTexture);
 		glUniform1i(glGetUniformLocation(mainProgram, "depth"), z);
+		glUniform1i(glGetUniformLocation(mainProgram, "onScreen"), 0);
 //		glUniform3fv(glGetUniformLocation(mainProgram, "position"), 1, glm::value_ptr(pos));
 		glUniformMatrix4fv(glGetUniformLocation(mainProgram, "modelView"), 1, GL_FALSE, glm::value_ptr(modelView));
 		glUniformMatrix4fv(glGetUniformLocation(mainProgram, "ortho"), 1, GL_FALSE, glm::value_ptr(ortho));
@@ -47,6 +47,7 @@ glm::mat4 modelView = view * o->modelMatrix;
 
 //		glm::mat4 modelView = view * o->modelMatrix;
 		glUniform1i(glGetUniformLocation(mainProgram, "depth"), z);
+		glUniform1i(glGetUniformLocation(mainProgram, "onScreen"), 1);
 //		glUniform3fv(glGetUniformLocation(mainProgram, "position"), 1, glm::value_ptr(pos));
 		glUniformMatrix4fv(glGetUniformLocation(mainProgram, "modelView"), 1, GL_FALSE, glm::value_ptr(modelView));
 		glUniformMatrix4fv(glGetUniformLocation(mainProgram, "ortho"), 1, GL_FALSE, glm::value_ptr(ortho));
@@ -156,7 +157,15 @@ void RenderEngine::initializeFBO() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, renderedTexture, 0);
+//	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, renderedTexture, 0);
+
+	glGenRenderbuffersEXT(1, &depthBuffer);
+	glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, depthBuffer);
+	glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT24, 1024, 1024);
+
+	// Attach texture and depth buffer to framebuffer
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1_EXT, GL_TEXTURE_2D, renderedTexture, 0);
+	glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, depthBuffer);
 
 /*	glGenRenderbuffers(1, &rbo);
     glBindRenderbuffer(GL_RENDERBUFFER, rbo);

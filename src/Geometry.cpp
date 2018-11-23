@@ -184,17 +184,17 @@ void Geometry::makeMesh(std::vector<Face*> faces) {
 		}
 		else
 		{
-			// verts.push_back(faceEdges[0]->start->v);
-			// verts.push_back(faceEdges[1]->start->v);
-			// verts.push_back(faceEdges[2]->start->v);
-			// for (int i = 0; i < 3; i++)
-			// {
+			 verts.push_back(faceEdges[0]->start->v);
+			 verts.push_back(faceEdges[1]->start->v);
+			 verts.push_back(faceEdges[2]->start->v);
+			 for (int i = 0; i < 3; i++)
+			 {
 			// 	// colours.push_back(glm::vec3(1.f, 0.f, 0.f));
 			// 	// colours1.push_back(glm::vec3(1.f, 0.f, 0.f));
 			//
-			// 	colours.push_back(glm::vec3(r/255.0f,g/255.0f,b/255.0f));
-			// 	colours1.push_back(glm::vec3(r/255.0f,g/255.0f,b/255.0f));
-			// }
+			 	colours.push_back(glm::vec3(r/255.0f,g/255.0f,b/255.0f));
+			 	colours1.push_back(glm::vec3(r/255.0f,g/255.0f,b/255.0f));
+			 }
 		}
 		// for (HalfEdge* h : faceEdges) {
 	// 		verts.push_back(h->start->v);

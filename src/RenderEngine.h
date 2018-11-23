@@ -37,6 +37,7 @@ private:
 	GLuint fbo = 0;
 	GLuint fbo_vao;
 	GLuint renderedTexture;
+	GLuint depthBuffer;
 	GLuint depthRenderBuffer;
 };
 
