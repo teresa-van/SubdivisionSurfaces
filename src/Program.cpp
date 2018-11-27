@@ -231,6 +231,8 @@ void Program::mainLoop() {
 
 	// Clean up, program needs to exit
 	glfwDestroyWindow(window);
+	for (Geometry* g: InputHandler::stuff)
+		renderEngine->deleteBuffers(*g);
 	delete renderEngine;
 	glfwTerminate();
 }

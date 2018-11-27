@@ -40,15 +40,21 @@ public:
 	GLuint drawMode;
 
 	GLuint vao;
+	GLuint vao0;
 	GLuint vertexBuffer;
 	GLuint colourBuffer;
 	GLuint textureBuffer;
+	GLuint vertexBuffer0;
 	GLuint colourBuffer0;
+	GLuint colourBuffer1;
 	std::vector<glm::vec3> verts;
 	std::vector<glm::vec3> colours;
 	std::vector<glm::vec2> uvs;
+	
+	std::vector<glm::vec3> verts0;
 	std::vector<glm::vec3> colours0;
 	std::vector<glm::vec3> colours1;
+	std::vector<glm::vec3> colours2;
 	glm::mat4 modelMatrix;
 
 	void makeCube(glm::vec3 pos, float w, float h, float d);

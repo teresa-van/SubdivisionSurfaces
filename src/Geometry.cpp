@@ -6,10 +6,14 @@
 Geometry::Geometry() {
 	drawMode = GL_TRIANGLES;
 	vao = 0;
+	vao0 = 0;
 	vertexBuffer = 0;
 	colourBuffer = 0;
 	colourBuffer0 = 0;
 	textureBuffer = 0;
+	vertexBuffer0 = 0;
+	colourBuffer1 = 0;
+	
 	modelMatrix = glm::mat4(1.f);
 	
 /*	std::vector<glm::vec2> sp = {
@@ -213,19 +217,19 @@ void Geometry::makeModel(std::vector<Face*> faces) {
 			 selected.push_back(f->id);
 			 selected0.push_back(f->id);
 		}
-		// for (HalfEdge* h : faceEdges) {
-	// 		verts.push_back(h->start->v);
-	// 		verts.push_back(h->nextEdge->start->v);
+		 for (HalfEdge* h : faceEdges) {
+	 		verts0.push_back(h->start->v);
+	 		verts0.push_back(h->nextEdge->start->v);
 	// 		int r = (h->id & 0x000000FF) >> 0;
 	// 		int g = (h->id & 0x0000FF00) >> 8;
 	// 		int b = (h->id & 0x00FF0000) >> 16;
-	// //		colours.push_back(glm::vec3(1.0f, 0.0f, 0.0f));
-	// //		colours.push_back(glm::vec3(1.0f, 0.0f, 0.0f));
+			colours2.push_back(glm::vec3(0.0f, 0.0f, 0.0f));
+			colours2.push_back(glm::vec3(0.0f, 0.0f, 0.0f));
 	// 		colours.push_back(glm::vec3(r/255.0f,g/255.0f,b/255.0f));
 	// 		colours.push_back(glm::vec3(r/255.0f,g/255.0f,b/255.0f));
 	// 		colours1.push_back(glm::vec3(r/255.0f,g/255.0f,b/255.0f));
 	// 		colours1.push_back(glm::vec3(r/255.0f,g/255.0f,b/255.0f));
-		// }
+		 }
 	}
 	// glLineWidth(160.0f);
 	drawMode = GL_TRIANGLES;

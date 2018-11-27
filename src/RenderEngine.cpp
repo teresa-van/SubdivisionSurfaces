@@ -39,6 +39,7 @@ glm::mat4 modelView = view * o->modelMatrix;
 	glBindTexture(GL_TEXTURE_2D, renderedTexture);
 	glUniform1i(glGetUniformLocation(mainProgram, "depth"), z);
 	glUniform1i(glGetUniformLocation(mainProgram, "onScreen"), 1);
+	glUniform1i(glGetUniformLocation(mainProgram, "fishnet"), 0);
 	glUniformMatrix4fv(glGetUniformLocation(mainProgram, "modelView"), 1, GL_FALSE, glm::value_ptr(modelView));
 	glUniformMatrix4fv(glGetUniformLocation(mainProgram, "ortho"), 1, GL_FALSE, glm::value_ptr(ortho));
 	glBindVertexArray(fbogeo->vao);
@@ -57,6 +58,10 @@ glClearColor(1.0, 1.0, 1.0, 1.0);
 //	glUniformMatrix4fv(glGetUniformLocation(mainProgram, "ortho"), 1, GL_FALSE, glm::value_ptr(ortho));
 	glBindVertexArray(o->vao);
 	glDrawArrays(o->drawMode, 0, o->verts.size());
+	glBindVertexArray(o->vao0);
+	glUniform1i(glGetUniformLocation(mainProgram, "fishnet"), 1);
+	glLineWidth(3.0f);
+	glDrawArrays(GL_LINES, 0, o->verts0.size());
 	glBindVertexArray(0);
 //	glUseProgram(0);
 	
@@ -66,6 +71,7 @@ glClearColor(1.0, 1.0, 1.0, 1.0);
 	glBindTexture(GL_TEXTURE_2D, renderedTexture0);
 	glUniform1i(glGetUniformLocation(mainProgram, "depth"), z);
 	glUniform1i(glGetUniformLocation(mainProgram, "onScreen"), 0);
+	glUniform1i(glGetUniformLocation(mainProgram, "fishnet"), 0);
 	glUniformMatrix4fv(glGetUniformLocation(mainProgram, "modelView"), 1, GL_FALSE, glm::value_ptr(modelView));
 	glUniformMatrix4fv(glGetUniformLocation(mainProgram, "ortho"), 1, GL_FALSE, glm::value_ptr(ortho));
 	glBindVertexArray(fbogeo->vao);
@@ -239,6 +245,22 @@ void RenderEngine::assignBuffers(Geometry& object) {
 	glEnableVertexAttribArray(3);
 
 	glBindVertexArray(0);
+	
+	glGenVertexArrays(1, &object.vao0);
+	glBindVertexArray(object.vao0);
+
+	// Vertex buffer
+	glGenBuffers(1, &object.vertexBuffer0);
+	glBindBuffer(GL_ARRAY_BUFFER, object.vertexBuffer0);
+	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+	glEnableVertexAttribArray(4);
+	// Colour buffer
+	glGenBuffers(1, &object.colourBuffer1);
+	glBindBuffer(GL_ARRAY_BUFFER, object.colourBuffer1);
+	glVertexAttribPointer(5, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+	glEnableVertexAttribArray(5);
+
+	glBindVertexArray(0);
 }
 
 // Updates geometry in buffer
@@ -250,7 +272,12 @@ void RenderEngine::updateBuffers(Geometry& object) {
 	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * object.colours.size(), object.colours.data(), GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, object.colourBuffer0);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * object.colours0.size(), object.colours0.data(), GL_DYNAMIC_DRAW);
-//	glBindBuffer(GL_ARRAY_BUFFER, object.textureBuffer);
+
+	glBindBuffer(GL_ARRAY_BUFFER, object.vertexBuffer0);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * object.verts0.size(), object.verts0.data(), GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, object.colourBuffer1);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * object.colours2.size(), object.colours2.data(), GL_DYNAMIC_DRAW);
+	//	glBindBuffer(GL_ARRAY_BUFFER, object.textureBuffer);
 //	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * object.uvs.size(), object.uvs.data(), GL_STATIC_DRAW);
 
 //	glBindBuffer(GL_FRAMEBUFFER, object.colourBuffer);
@@ -264,8 +291,10 @@ void RenderEngine::updateBuffers(Geometry& object) {
 // Deletes buffers
 void RenderEngine::deleteBuffers(Geometry& object) {
 	glDeleteBuffers(1, &object.vertexBuffer);
+	glDeleteBuffers(1, &object.vertexBuffer0);
 	glDeleteBuffers(1, &object.colourBuffer);
 	glDeleteBuffers(1, &object.colourBuffer0);
+	glDeleteBuffers(1, &object.colourBuffer1);
 	glDeleteVertexArrays(1, &object.vao);
 }
 

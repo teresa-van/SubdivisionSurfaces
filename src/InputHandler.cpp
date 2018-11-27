@@ -138,9 +138,9 @@ void InputHandler::mouse(GLFWwindow* window, int button, int action, int mods) {
 					pickedIDs.push_back(pickedID);
 			}
 		}
-		for (int i : pickedIDs)
-			std::cout << i << " " ;
-		std::cout<< std::endl;
+//		for (int i : pickedIDs)
+//			std::cout << i << " " ;
+//		std::cout<< std::endl;
 	}
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
 	{
@@ -181,8 +181,8 @@ void InputHandler::motion(GLFWwindow* window, double x, double y) {
 	}
 	else {
 		if ((int)data[3] == 255) {
-			std::cout << "r:" << (int)data[0] << ", g:" << (int)data[1] << ", b:" << (int)data[2] << ", a:" << (int)data[3] << std::endl;
-			std::cout << "EdgeID : " <<pickedID << std::endl;
+//			std::cout << "r:" << (int)data[0] << ", g:" << (int)data[1] << ", b:" << (int)data[2] << ", a:" << (int)data[3] << std::endl;
+//			std::cout << "EdgeID : " <<pickedID << std::endl;
 		}
 	}
 	
