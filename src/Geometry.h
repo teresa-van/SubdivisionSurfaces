@@ -43,11 +43,11 @@ public:
 	GLuint vertexBuffer;
 	GLuint colourBuffer;
 	GLuint textureBuffer;
-//	GLuint colourBuffer0;
+	GLuint colourBuffer0;
 	std::vector<glm::vec3> verts;
 	std::vector<glm::vec3> colours;
 	std::vector<glm::vec2> uvs;
-//	std::vector<glm::vec3> colours0;
+	std::vector<glm::vec3> colours0;
 	std::vector<glm::vec3> colours1;
 	glm::mat4 modelMatrix;
 
@@ -56,6 +56,7 @@ public:
 //	void makeFace(std::vector<glm::vec3> points);
 //	void makeFace(Face* f);
 	void makeMesh(std::vector<Face*> faces);
+	void makeModel(std::vector<Face*> faces);
 	void makePoint(glm::vec3 v);
 //	void makeHEdge(HalfEdge *e);
 //	void makeEdge(Vertex p0, Vertex p1);
@@ -63,9 +64,11 @@ public:
 	void clearGeometry();
 
 	void highlightEdge(int eID);
-	void unhighlightEdge(int eID);
+//	void unhighlightEdge(int eID);
 	void unhighlightEdge();
-//	void makeFBO(std::vector<glm::vec2> screenPoints);
+	void makeFBO(std::vector<glm::vec3> screenPoints);
 
 	static std::map<int, Face*> EdgeIDs;
+	std::vector<int> selected;
+	std::vector<int> selected0;
 };

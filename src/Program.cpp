@@ -79,6 +79,7 @@ std::vector<int> InputHandler::pickedIDs;
 bool InputHandler::multiPick = false;
 
 std::map<int, Face*> Geometry::EdgeIDs;
+//std::vector<int> InputHandler::selected;
 
 void Program::mainLoop() {
 
@@ -200,14 +201,21 @@ void Program::mainLoop() {
 		faceIndex++;
 	}
 			InputHandler::lastID = idCounter;
-			Geometry* mesh = new Geometry();
+			Geometry* model = new Geometry();
+			model->makeModel(fList);
+			model->modelMatrix = glm::rotate(model->modelMatrix, glm::radians(180.0f), glm::vec3(0.0f,1.0f,0.0f));
+			model->modelMatrix = glm::rotate(model->modelMatrix, glm::radians(90.0f), glm::vec3(-1.0f,0.0f,0.0f));
+			renderEngine->assignBuffers(*model);
+			renderEngine->updateBuffers(*model);
+			InputHandler::stuff.push_back(model);
+			
+/*			Geometry* mesh = new Geometry();
 			mesh->makeMesh(fList);
 			mesh->modelMatrix = glm::rotate(mesh->modelMatrix, glm::radians(180.0f), glm::vec3(0.0f,1.0f,0.0f));
 			mesh->modelMatrix = glm::rotate(mesh->modelMatrix, glm::radians(90.0f), glm::vec3(-1.0f,0.0f,0.0f));
-
 			renderEngine->assignBuffers(*mesh);
 			renderEngine->updateBuffers(*mesh);
-			InputHandler::stuff.push_back(mesh);
+			InputHandler::stuff.push_back(mesh);*/
 			renderEngine->render(InputHandler::stuff,glm::mat4(1.f),0);
 
 	InputHandler::setUp(renderEngine);

@@ -8,8 +8,10 @@ uniform bool depth;
 layout (location = 0) in vec3 vertex;
 layout (location = 1) in vec3 col;
 layout (location = 2) in vec2 texpos;
+layout (location = 3) in vec3 col0;
 
 out vec3 C;
+out vec3 C0;
 out vec2 UV;
 
 void main(void) {
@@ -20,5 +22,6 @@ void main(void) {
 //    C = vec4(0.0f,0.0f,-.0f,1.0f).xyz*col;
 //    else
     C = col;
+    C0 = col0;
     UV = texpos;
 }

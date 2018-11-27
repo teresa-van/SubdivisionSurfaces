@@ -35,8 +35,10 @@ private:
 	
 	Geometry *fbogeo;
 	GLuint fbo = 0;
+	GLuint fbo0 = 1;
 	GLuint fbo_vao;
 	GLuint renderedTexture;
+	GLuint renderedTexture0;
 	GLuint depthBuffer;
 	GLuint depthRenderBuffer;
 };

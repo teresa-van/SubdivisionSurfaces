@@ -8,12 +8,14 @@ Geometry::Geometry() {
 	vao = 0;
 	vertexBuffer = 0;
 	colourBuffer = 0;
+	colourBuffer0 = 0;
 	textureBuffer = 0;
 	modelMatrix = glm::mat4(1.f);
-	std::vector<glm::vec2> sp = {
+	
+/*	std::vector<glm::vec2> sp = {
 		glm::vec2(0.0f,0.0f), glm::vec2(0.0f,1024.0f), glm::vec2(1024.0f,0.0f),
 		glm::vec2(1024.0f,0.0f), glm::vec2(0.0f,1024.0f), glm::vec2(1024.0f,1024.0f)};
-	uvs = sp;
+	uvs = sp;*/
 }
 
 void Geometry::makeCube(glm::vec3 pos, float w, float h, float d) {
@@ -146,7 +148,8 @@ void Geometry::makeFace(Face* f) {
 	drawMode = GL_LINES;
 }
 */
-void Geometry::makeMesh(std::vector<Face*> faces) {
+void Geometry::makeModel(std::vector<Face*> faces) {
+	
 //			std::vector<glm::vec3> facePoints;
 	for (Face* f : faces) {
 		std::vector<HalfEdge*> faceEdges;
@@ -169,9 +172,9 @@ void Geometry::makeMesh(std::vector<Face*> faces) {
 			verts.push_back(faceEdges[1]->start->v);
 			verts.push_back(faceEdges[2]->start->v);
 
+			verts.push_back(faceEdges[3]->start->v);
 			verts.push_back(faceEdges[0]->start->v);
 			verts.push_back(faceEdges[2]->start->v);
-			verts.push_back(faceEdges[3]->start->v);
 
 			for (int i = 0; i < 6; i++)
 			{
@@ -179,8 +182,16 @@ void Geometry::makeMesh(std::vector<Face*> faces) {
 				// colours1.push_back(glm::vec3(1.f, 0.f, 0.f));
 
 				colours.push_back(glm::vec3(r/255.0f,g/255.0f,b/255.0f));
-				colours1.push_back(glm::vec3(r/255.0f,g/255.0f,b/255.0f));
+				colours0.push_back(glm::vec3(0.5f));
+				colours1.push_back(glm::vec3(0.5f));
+//				colours1.push_back(glm::vec3(r/255.0f,g/255.0f,b/255.0f));
+//				selected.push_back(f->id);
+//				selected0.push_back(f->id);
 			}
+			selected.push_back(f->id);
+			selected.push_back(f->id);
+			selected0.push_back(f->id);
+			selected0.push_back(f->id);
 		}
 		else
 		{
@@ -193,8 +204,14 @@ void Geometry::makeMesh(std::vector<Face*> faces) {
 			// 	// colours1.push_back(glm::vec3(1.f, 0.f, 0.f));
 			//
 			 	colours.push_back(glm::vec3(r/255.0f,g/255.0f,b/255.0f));
-			 	colours1.push_back(glm::vec3(r/255.0f,g/255.0f,b/255.0f));
+			 	colours0.push_back(glm::vec3(0.5f));
+			 	colours1.push_back(glm::vec3(0.5f));
+//			 	colours1.push_back(glm::vec3(r/255.0f,g/255.0f,b/255.0f));
+//			 	selected.push_back(f->id);
+//			 	selected0.push_back(f->id);
 			 }
+			 selected.push_back(f->id);
+			 selected0.push_back(f->id);
 		}
 		// for (HalfEdge* h : faceEdges) {
 	// 		verts.push_back(h->start->v);
@@ -212,8 +229,37 @@ void Geometry::makeMesh(std::vector<Face*> faces) {
 	}
 	// glLineWidth(160.0f);
 	drawMode = GL_TRIANGLES;
+	
 }
-
+void Geometry::makeMesh(std::vector<Face*> faces) {
+	
+//			std::vector<glm::vec3> facePoints;
+	for (Face* f : faces) {
+		std::vector<HalfEdge*> faceEdges;
+		HalfEdge* curEdge = f->e;
+		do {
+	//				facePoints.push_back(curEdge->start->v);
+			faceEdges.push_back(curEdge);
+			curEdge = curEdge->nextEdge;
+		}
+		while (curEdge != f->e);
+		for (HalfEdge* h : faceEdges) {
+	 		verts.push_back(h->start->v);
+	 		verts.push_back(h->nextEdge->start->v);
+			colours.push_back(glm::vec3(1.0f, 0.0f, 0.0f));
+			colours.push_back(glm::vec3(1.0f, 0.0f, 0.0f));
+			colours0.push_back(glm::vec3(1.0f, 0.0f, 0.0f));
+			colours0.push_back(glm::vec3(1.0f, 0.0f, 0.0f));
+			colours1.push_back(glm::vec3(1.0f, 0.0f, 0.0f));
+			colours1.push_back(glm::vec3(1.0f, 0.0f, 0.0f));
+			selected.push_back(f->id);
+			selected0.push_back(f->id);
+			
+		 }
+	}
+	drawMode = GL_LINES;
+	
+}
 void Geometry::highlightEdge(int eID) {
 	int r = (eID & 0x000000FF) >> 0;
 	int g = (eID & 0x0000FF00) >> 8;
@@ -224,25 +270,37 @@ void Geometry::highlightEdge(int eID) {
 	int ba = ((eID+0x0000ff00) & 0x00FF0000) >> 16;
 	glm::vec3 colIDa = glm::vec3(ra/255.0f,ga/255.0f,ba/255.0f);
 	*/
-	std::replace(colours.begin(), colours.end(), colID, colID+glm::vec3(0.0f,0.0f,1.0f));
+	for (int i=0; i<selected.size(); i++) {
+		if (selected[i]==eID) {
+			colours0[i*3] = glm::vec3(0.0f,0.0f,1.0f);
+			colours0[i*3+1] = glm::vec3(0.0f,0.0f,1.0f);
+			colours0[i*3+2] = glm::vec3(0.0f,0.0f,1.0f);
+		}
+	}
+//	std::replace(colours.begin(), colours.end(), colID, colID+glm::vec3(0.0f,0.0f,1.0f));
 }
 void Geometry::unhighlightEdge() {
 
-	colours = colours1;
+	colours0 = colours1;
+	selected = selected0;
 }
-void Geometry::unhighlightEdge(int eID) {
+/*void Geometry::unhighlightEdge(int eID) {
 	int r = (eID & 0x000000FF) >> 0;
 	int g = (eID & 0x0000FF00) >> 8;
 	int b = (eID & 0x00FF0000) >> 16;
 	glm::vec3 colID = glm::vec3(r/255.0f,g/255.0f,b/255.0f);
 	std::replace(colours.begin(), colours.end(), colID, colID-glm::vec3(0.0f,0.0f,1.0f));
-}
-/*
-void Geometry::makeFBO(std::vector<glm::vec3> screenPoints) {
-	for (glm::vec3 p : screenPoints)
-		verts.push_back(p);
-	drawMode = GL_TRIANGLES;
 }*/
+
+void Geometry::makeFBO(std::vector<glm::vec3> screenPoints) {
+//	for (glm::vec3 p : screenPoints)
+	for (int i=0; i<6; i++) {
+//		std::cout << screenPoints[i].x << "," << screenPoints[i].y << "," << screenPoints[i].z << std::endl;
+		verts.push_back(screenPoints[i]);
+	}
+//		verts.push_back(p);
+	drawMode = GL_TRIANGLES;
+}
 
 void Geometry::makePoint(glm::vec3 v) {
 	verts.push_back(v);
