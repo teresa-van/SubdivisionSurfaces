@@ -29,6 +29,7 @@ struct Vertex {
 struct Face {
 	HalfEdge* e;
 	int id;
+	int elevation;
 };
 
 
@@ -77,4 +78,7 @@ public:
 	static std::map<int, Face*> EdgeIDs;
 	std::vector<int> selected;
 	std::vector<int> selected0;
+	
+	void elevateFace(int fID, float h);
+	
 };

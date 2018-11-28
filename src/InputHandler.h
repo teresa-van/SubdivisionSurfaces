@@ -52,10 +52,13 @@ public:
 	static std::vector<Geometry*> stuff;
 	
 	static int lastID;
+	static int idCounter;
 	static int pickedID;
 	static std::vector<int> pickedIDs;
 	static bool multiPick;
 		
+	static float elevate;
+	
 private:
 	static RenderEngine* renderEngine;
 

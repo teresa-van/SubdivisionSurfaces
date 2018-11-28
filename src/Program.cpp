@@ -74,12 +74,15 @@ glm::vec2 InputHandler::mousePos = glm::vec2(0, 0);
 std::vector<Geometry*> InputHandler::stuff;
 
 int InputHandler::lastID = 0;
+int InputHandler::idCounter = 0;
 int InputHandler::pickedID = -1;
 std::vector<int> InputHandler::pickedIDs;
 bool InputHandler::multiPick = false;
 
 std::map<int, Face*> Geometry::EdgeIDs;
 //std::vector<int> InputHandler::selected;
+
+float InputHandler::elevate = 0.0f;
 
 void Program::mainLoop() {
 
@@ -105,11 +108,12 @@ void Program::mainLoop() {
 //	for (int k=1000; k<1006;k++){
 		Face* fa = new Face();
 		fList.push_back(fa);
+		fa->elevation = 0;
 	}
 //	Face* fa = new Face();
 //		fList.push_back(fa);
 	int faceIndex = 0;
-	int idCounter = 0;
+//	int idCounter = 0;
 	for (std::vector<int> face : faces) {
 //	for (int k=1000; k<1006; k++) {
 //		std::vector<int> face = faces[k];
@@ -195,12 +199,12 @@ void Program::mainLoop() {
 			
 //				idCounter = idCounter << 1;
 		}
-		fList[faceIndex]->id = idCounter;
-		Geometry::EdgeIDs[idCounter] = fList[faceIndex];
-		idCounter++;
+		fList[faceIndex]->id = InputHandler::idCounter;
+		Geometry::EdgeIDs[InputHandler::idCounter] = fList[InputHandler::idCounter];
+		InputHandler::idCounter++;
 		faceIndex++;
 	}
-			InputHandler::lastID = idCounter;
+			InputHandler::lastID = InputHandler::idCounter;
 			Geometry* model = new Geometry();
 			model->makeModel(fList);
 			model->modelMatrix = glm::rotate(model->modelMatrix, glm::radians(180.0f), glm::vec3(0.0f,1.0f,0.0f));
