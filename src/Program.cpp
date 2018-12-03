@@ -91,7 +91,8 @@ void Program::mainLoop() {
 	std::vector<std::vector<int>> faces;
 	std::vector<std::vector<int>> fnormals;
 //	std::vector<std::vector<std::pair<int,int>>> faces;
-	bool res = loadOBJ("src/male_head.obj", vertices, vnormals, faces, fnormals);
+	bool res = loadOBJ("src/cube.obj", vertices, vnormals, faces, fnormals);
+//	bool res = loadOBJ("src/male_head.obj", vertices, vnormals, faces, fnormals);
 //	bool res = loadOBJ("src/uh60.obj", vertices, vnormals, faces, fnormals);
 
 	std::vector<Vertex*> vList;

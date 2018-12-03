@@ -55,12 +55,13 @@ void InputHandler::key(GLFWwindow* window, int key, int scancode, int action, in
 		moveUp = false;
 	if (key == GLFW_KEY_F && action == GLFW_RELEASE) 
 		moveDown = false;
-	if (key == GLFW_KEY_UP && (action == GLFW_PRESS||action == GLFW_REPEAT)) 
+/*	if (key == GLFW_KEY_UP && (action == GLFW_PRESS||action == GLFW_REPEAT)) 
 		elevate = -1.0f;
 	if (key == GLFW_KEY_DOWN && (action == GLFW_PRESS||action == GLFW_REPEAT)) 
 		elevate = 1.0f;
 	if ((key == GLFW_KEY_UP || key == GLFW_KEY_DOWN) && action == GLFW_RELEASE) 
 		elevate = 0.0f;
+	*/
 	
 /*	if (key == GLFW_KEY_A && (action == GLFW_PRESS||action == GLFW_REPEAT)) {
 //			dx = dx+0.1f;
@@ -270,7 +271,7 @@ void InputHandler::renderGeometries() {
 		g->unhighlightEdge();
 		for(int i : pickedIDs) {
 			if (i >= 0) {
-				g->elevateFace(i, elevate);
+//				g->elevateFace(i, elevate);
 				g->highlightEdge(i);
 			}
 		}
