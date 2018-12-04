@@ -13,9 +13,9 @@ Geometry::Geometry() {
 	textureBuffer = 0;
 	vertexBuffer0 = 0;
 	colourBuffer1 = 0;
-	
+
 	modelMatrix = glm::mat4(1.f);
-	
+
 /*	std::vector<glm::vec2> sp = {
 		glm::vec2(0.0f,0.0f), glm::vec2(0.0f,1024.0f), glm::vec2(1024.0f,0.0f),
 		glm::vec2(1024.0f,0.0f), glm::vec2(0.0f,1024.0f), glm::vec2(1024.0f,1024.0f)};
@@ -153,7 +153,7 @@ void Geometry::makeFace(Face* f) {
 }
 */
 void Geometry::makeModel(std::vector<Face*> faces) {
-	
+
 //			std::vector<glm::vec3> facePoints;
 	for (Face* f : faces) {
 		std::vector<HalfEdge*> faceEdges;
@@ -214,10 +214,10 @@ void Geometry::makeModel(std::vector<Face*> faces) {
 	}
 	// glLineWidth(160.0f);
 	drawMode = GL_TRIANGLES;
-	
+
 }
 void Geometry::makeMesh(std::vector<Face*> faces) {
-	
+
 //			std::vector<glm::vec3> facePoints;
 	for (Face* f : faces) {
 		std::vector<HalfEdge*> faceEdges;
@@ -239,11 +239,11 @@ void Geometry::makeMesh(std::vector<Face*> faces) {
 			colours1.push_back(glm::vec3(1.0f, 0.0f, 0.0f));
 			selected.push_back(f->id);
 			selected0.push_back(f->id);
-			
+
 		 }
 	}
 	drawMode = GL_LINES;
-	
+
 }
 void Geometry::highlightEdge(int eID) {
 	int r = (eID & 0x000000FF) >> 0;
@@ -323,13 +323,13 @@ void Geometry::elevateFace(int fID, float height) {
 	}
 	while (curEdge != f->e);
 	glm::vec3 direction = glm::normalize(glm::cross(faceEdges[0]->start->v-faceEdges[1]->start->v,faceEdges[2]->start->v-faceEdges[1]->start->v));
-	
+
 	int numEdges = faceEdges.size();
 	// std::cout << numEdges << "\n";
 	int r = (f->id & 0x000000FF) >> 0;
 	int g = (f->id & 0x0000FF00) >> 8;
 	int b = (f->id & 0x00FF0000) >> 16;
-	
+
 	if (EdgeIDs[fID]->elevation+height != 0 && height != 0) {
 
 		EdgeIDs[fID]->elevation += height;
@@ -362,7 +362,7 @@ void Geometry::elevateFace(int fID, float height) {
 			newHEdgesNewFace.push_back(newhe2);
 			newHEdgesOldFace.push_back(newhe3);
 		}
-		
+
 		for (int i=0; i<newHEdgesOldFace.size(); i++) {
 			if (i == newHEdgesOldFace.size()-1) {
 				newHEdgesOldFace[i]->nextEdge = newHEdgesOldFace[0];
@@ -371,11 +371,11 @@ void Geometry::elevateFace(int fID, float height) {
 				newHEdgesOldFace[i]->nextEdge = newHEdgesOldFace[i];
 			newHEdgesOldFace[i]->start = newVertices[i];
 			newHEdgesOldFace[i]->f = EdgeIDs[fID];
-			
+
 			newHEdgesOldFace[i]->pairEdge = newHEdgesNewFace[i*4+2];
-			if (i == newHEdgesOldFace.size()-1) 
+			if (i == newHEdgesOldFace.size()-1)
 				newHEdgesOldFace[i]->pairEdge->start = newVertices[0];
-			else 
+			else
 				newHEdgesOldFace[i]->pairEdge->start = newVertices[i+1];
 			newHEdgesOldFace[i]->pairEdge->nextEdge = newHEdgesNewFace[i*4+3];
 			newHEdgesOldFace[i]->pairEdge->nextEdge->start = newVertices[i];
@@ -383,20 +383,20 @@ void Geometry::elevateFace(int fID, float height) {
 			newHEdgesOldFace[i]->pairEdge->nextEdge->nextEdge->nextEdge = newHEdgesNewFace[i*4+1];
 			newHEdgesOldFace[i]->pairEdge->nextEdge->nextEdge->nextEdge->start = newHEdgesNewFace[i*4]->pairEdge->start;
 			newHEdgesOldFace[i]->pairEdge->nextEdge->nextEdge->nextEdge->nextEdge = newHEdgesNewFace[i*4+2];
-			
+
 //			newHEdgesNewFace[i*4+2]->start = newVertices[i*4];
 //			newHEdgesNewFace[i*4+3]->start = newVertices[i];
-			
-			if (i == 0) 
+
+			if (i == 0)
 				newHEdgesNewFace[i*4+3] = newHEdgesNewFace[(newHEdgesOldFace.size()-1)*4+1];
 			else
 				newHEdgesNewFace[i*4+3] = newHEdgesNewFace[(i-1)*4+1];
-			if (i == newHEdgesOldFace.size()-1) 
+			if (i == newHEdgesOldFace.size()-1)
 				newHEdgesNewFace[i*4+1] = newHEdgesNewFace[3];
 			else
 				newHEdgesNewFace[i*4+1] = newHEdgesNewFace[(i+1)*4+1];
-		}				
-				
+		}
+
 		for (Face* fa : newFaces) {
 			std::vector<HalfEdge*> faceEdges0;
 			HalfEdge* curEdge = fa->e;
@@ -443,7 +443,7 @@ void Geometry::elevateFace(int fID, float height) {
 				colours2.push_back(glm::vec3(0.0f, 0.0f, 0.0f));
 			 }
 		}
-		
+
 			if (numEdges == 4)
 			{
 				for (int i=0; i<selected.size(); i++) {
@@ -536,26 +536,29 @@ void Geometry::elevateFace(int fID, float height) {
 			}
 		}
 	}
-	*/		
+	*/
 
-		
+
 //	 		verts0.push_back(h->start->v);
 //	 		verts0.push_back(h->nextEdge->start->v);
 	//	for (glm::vec3 p : points) {
 //		int numEdges = faceEdges.size();
-	
+
 }
 
-void Geometry::subdivideMesh() { 
+void Geometry::subdivideMesh(Mesh * mesh) {
 	// CHECK SCOPES
-	std::vector<Face*> faces;	// all faces on mesh, might have to be global
-	std::vector<Vertex*> vertices; // all vertices on mesh, might have to be global
+	std::vector<Face*> faces = mesh->faces;	// all faces on mesh, might have to be global
+	std::vector<Vertex*> vertices = mesh->vertices; // all vertices on mesh, might have to be global
 	std::vector<Face*> newFaces;
 	std::vector<Vertex*> FVs;
 	std::vector<Vertex*> EVs;
-	
+
 	//Creates a lsit of new vertices per face
 	for (Face* f:faces) {
+
+		std::cout << "1. Face: " << f->id << "\n";
+
 		Vertex* v0 = new Vertex();
 		HalfEdge* current = f->e;
 		v0->v = glm::vec3(0.0f);
@@ -569,12 +572,14 @@ void Geometry::subdivideMesh() {
 	}
 	//Creates list of new vertices per edge
 	for (Face* f:faces) {
+		std::cout << "2. Face: " << f->id << "\n";
+
 		glm::vec3 p = glm::vec3(0.0f);
 		HalfEdge* current = f->e;
 		do {
 			p = (current->start->v + FVs[current->f->id]->v +current->pairEdge->start->v + FVs[current->pairEdge->f->id]->v)/4.0f;
 			// checks if the edge has already been split
-			if (p == current->pairEdge->start->v) 
+			if (p == current->pairEdge->start->v)
 				current = current->nextEdge->nextEdge;
 			else {
 				Vertex* v0 = new Vertex();
@@ -648,12 +653,11 @@ void Geometry::subdivideMesh() {
 		v0->v = v0->v/nADJ;
 	}
 	// add the new vertices to the lsit of vertices
-	for (Vertex* v0 : FVs) 
-		vertices.push_back(v0);	
-	for (Vertex* v0 : EVs) 
+	for (Vertex* v0 : FVs)
+		vertices.push_back(v0);
+	for (Vertex* v0 : EVs)
 		vertices.push_back(v0);
 	for (Face* f0 : newFaces)
 		faces.push_back(f0);
-		
-}
 
+}

@@ -32,6 +32,12 @@ struct Face {
 	int elevation;
 };
 
+struct Mesh
+{
+	std::vector<Face*> faces;
+	std::vector<Vertex*> vertices;
+};
+
 
 class Geometry {
 
@@ -51,7 +57,7 @@ public:
 	std::vector<glm::vec3> verts;
 	std::vector<glm::vec3> colours;
 	std::vector<glm::vec2> uvs;
-	
+
 	std::vector<glm::vec3> verts0;
 	std::vector<glm::vec3> colours0;
 	std::vector<glm::vec3> colours1;
@@ -78,10 +84,10 @@ public:
 	static std::map<int, Face*> EdgeIDs;
 	std::vector<int> selected;
 	std::vector<int> selected0;
-	
+
 	void elevateFace(int fID, float h);
-	
-	
-	void subdivideMesh();
-	
+
+
+	void subdivideMesh(Mesh* mesh);
+
 };

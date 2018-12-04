@@ -73,6 +73,7 @@ glm::vec2 InputHandler::mousePos = glm::vec2(0, 0);
 
 
 std::vector<Geometry*> InputHandler::stuff;
+Mesh * InputHandler::mesh;
 
 int InputHandler::lastID = 0;
 int InputHandler::idCounter = 0;
@@ -198,7 +199,7 @@ void Program::mainLoop() {
 
 		// }
 		// if (Edges[uv]->id == -1) {
-			
+
 //				idCounter = idCounter << 1;
 		}
 		fList[faceIndex]->id = InputHandler::idCounter;
@@ -206,25 +207,33 @@ void Program::mainLoop() {
 		InputHandler::idCounter++;
 		faceIndex++;
 	}
-			InputHandler::lastID = InputHandler::idCounter;
-			Geometry* model = new Geometry();
-			model->makeModel(fList);
-			model->modelMatrix = glm::rotate(model->modelMatrix, glm::radians(180.0f), glm::vec3(0.0f,1.0f,0.0f));
-			model->modelMatrix = glm::rotate(model->modelMatrix, glm::radians(90.0f), glm::vec3(-1.0f,0.0f,0.0f));
-			renderEngine->assignBuffers(*model);
-			renderEngine->updateBuffers(*model);
-			InputHandler::stuff.push_back(model);
-			
+
+	InputHandler::mesh = new Mesh();
+	for (Face * f : fList)
+		InputHandler::mesh->faces.push_back(f);
+	for (Vertex * v : vList)
+		InputHandler::mesh->vertices.push_back(v);
+
+	InputHandler::lastID = InputHandler::idCounter;
+	Geometry* model = new Geometry();
+	model->makeModel(fList);
+	model->modelMatrix = glm::rotate(model->modelMatrix, glm::radians(180.0f), glm::vec3(0.0f,1.0f,0.0f));
+	model->modelMatrix = glm::rotate(model->modelMatrix, glm::radians(90.0f), glm::vec3(-1.0f,0.0f,0.0f));
+	renderEngine->assignBuffers(*model);
+	renderEngine->updateBuffers(*model);
+	InputHandler::stuff.push_back(model);
+
 /*			Geometry* mesh = new Geometry();
-			mesh->makeMesh(fList);
-			mesh->modelMatrix = glm::rotate(mesh->modelMatrix, glm::radians(180.0f), glm::vec3(0.0f,1.0f,0.0f));
-			mesh->modelMatrix = glm::rotate(mesh->modelMatrix, glm::radians(90.0f), glm::vec3(-1.0f,0.0f,0.0f));
-			renderEngine->assignBuffers(*mesh);
-			renderEngine->updateBuffers(*mesh);
-			InputHandler::stuff.push_back(mesh);*/
-			renderEngine->render(InputHandler::stuff,glm::mat4(1.f),0);
+	mesh->makeMesh(fList);
+	mesh->modelMatrix = glm::rotate(mesh->modelMatrix, glm::radians(180.0f), glm::vec3(0.0f,1.0f,0.0f));
+	mesh->modelMatrix = glm::rotate(mesh->modelMatrix, glm::radians(90.0f), glm::vec3(-1.0f,0.0f,0.0f));
+	renderEngine->assignBuffers(*mesh);
+	renderEngine->updateBuffers(*mesh);
+	InputHandler::stuff.push_back(mesh);*/
+	renderEngine->render(InputHandler::stuff,glm::mat4(1.f),0);
 
 	InputHandler::setUp(renderEngine);
+
 //std::cout << "DFASDFDSA" << std::endl;
 /*	for (Geometry* g : InputHandler::stuff)
 		renderEngine->updateBuffers(*g);
