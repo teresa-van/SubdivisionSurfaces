@@ -21,90 +21,16 @@ Geometry::Geometry() {
 		glm::vec2(1024.0f,0.0f), glm::vec2(0.0f,1024.0f), glm::vec2(1024.0f,1024.0f)};
 	uvs = sp;*/
 }
-
-void Geometry::makeCube(glm::vec3 pos, float w, float h, float d) {
-	glm::vec3 p0 = pos+glm::vec3(w,h,d);
-	glm::vec3 p1 = pos+glm::vec3(-w,h,d);
-	glm::vec3 p2 = pos+glm::vec3(w,-h,d);
-	glm::vec3 p3 = pos+glm::vec3(-w,-h,d);
-	glm::vec3 p4 = pos+glm::vec3(w,h,-d);
-	glm::vec3 p5 = pos+glm::vec3(-w,h,-d);
-	glm::vec3 p6 = pos+glm::vec3(w,-h,-d);
-	glm::vec3 p7 = pos+glm::vec3(-w,-h,-d);
-
-	verts.push_back(p0);
-	verts.push_back(p1);
-	verts.push_back(p2);
-	verts.push_back(p3);
-//	verts.push_back(p4);
-//	verts.push_back(p5);
-//	verts.push_back(p6);
-//	verts.push_back(p7);
-/*	verts.push_back(p0);
-	verts.push_back(p2);
-	verts.push_back(p4);
-	verts.push_back(p6);
-	verts.push_back(p1);
-	verts.push_back(p3);
-	verts.push_back(p5);
-	verts.push_back(p7);
-	verts.push_back(p0);
-	verts.push_back(p4);
-	verts.push_back(p1);
-	verts.push_back(p5);
-	verts.push_back(p2);
-	verts.push_back(p6);
-	verts.push_back(p3);
-	verts.push_back(p7);*/
-
-/*	verts.push_back(p0);
-	verts.push_back(p1);
-	verts.push_back(p2);
-	verts.push_back(p1);
-	verts.push_back(p3);
-	verts.push_back(p2);
-
-	verts.push_back(p4);
-	verts.push_back(p5);
-	verts.push_back(p6);
-	verts.push_back(p5);
-	verts.push_back(p7);
-	verts.push_back(p6);
-
-	verts.push_back(p1);
-	verts.push_back(p5);
-	verts.push_back(p3);
-	verts.push_back(p5);
-	verts.push_back(p7);
-	verts.push_back(p3);
-
-	verts.push_back(p0);
-	verts.push_back(p4);
-	verts.push_back(p2);
-	verts.push_back(p4);
-	verts.push_back(p6);
-	verts.push_back(p2);
-
-	verts.push_back(p0);
-	verts.push_back(p1);
-	verts.push_back(p4);
-	verts.push_back(p1);
-	verts.push_back(p5);
-	verts.push_back(p4);
-
-	verts.push_back(p2);
-	verts.push_back(p3);
-	verts.push_back(p6);
-	verts.push_back(p3);
-	verts.push_back(p7);
-	verts.push_back(p6);
-	*/
-	for (int i=0; i<24; i++)
-		colours.push_back(glm::vec3(0.0f,1.0f,0.0f));
-
-//	drawMode = GL_TRIANGLES;
-	drawMode = GL_LINE_LOOP;
-//	glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+void Geometry::clearGeometry() {
+	verts.clear();
+	verts0.clear();
+	colours.clear();
+	colours0.clear();
+	colours1.clear();
+	colours2.clear();
+	selected.clear();
+	selected0.clear();
+	modelMatrix = glm::mat4(1.f);
 }
 
 /*void Geometry::makeFace(glm::vec3 p0, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3) {
@@ -549,14 +475,14 @@ void Geometry::elevateFace(int fID, float height) {
 void Geometry::subdivideMesh(Mesh * mesh)
 {
 	// CHECK SCOPES
-	std::vector<Face*> faces = mesh->faces;	// all faces on mesh, might have to be global
-	std::vector<Vertex*> vertices = mesh->vertices; // all vertices on mesh, might have to be global
+//	std::vector<Face*> faces = mesh->faces;	// all faces on mesh, might have to be global
+//	std::vector<Vertex*> vertices = mesh->vertices; // all vertices on mesh, might have to be global
 	std::vector<Face*> newFaces;
 	std::vector<Vertex*> FVs;
 	std::vector<Vertex*> EVs;
 
 	//Creates a lsit of new vertices per face
-	for (Face* f : faces)
+	for (Face* f : mesh->faces)
 	{
 		// std::cout << "1. Face: " << f->id << "\n";
 
@@ -589,29 +515,33 @@ void Geometry::subdivideMesh(Mesh * mesh)
 
 	// std::cout << "\n";
 
+//	for (Vertex* v0 : FVs)
+//		std::cout << v0->v.x << "," << v0->v.y << "," << v0->v.z << std::endl;
+
 	//Creates list of new vertices per edge
-	for (Face* f : faces)
+	for (Face* f : mesh->faces)
 	{
-		std::cout << "\n2. Face: " << f->id << "\n";
+//		std::cout << "\n2. Face: " << f->id << "\n";
 
 		glm::vec3 p = glm::vec3(0.0f);
 		HalfEdge* current = f->e;
 		do
 		{
-			std::cout << current->f->id << " <- current \n";
-			std::cout << current->pairEdge->f->id << " <- pair \n";
-
-			p = (current->start->v + FVs[current->f->id]->v + current->pairEdge->start->v + FVs[current->pairEdge->f->id]->v) / 4.0f;
-			// std::cout << "here 2\n";
+//			p = (current->start->v + FVs[current->f->id]->v + current->pairEdge->start->v + FVs[current->pairEdge->f->id]->v) / 4.0f;
 
 			// checks if the edge has already been split
-			if (p == current->pairEdge->start->v)
+//					std::cout << p.x << "," << p.y << "," << p.z << std::endl;
+//					std::cout << std::endl;
+/*			if (p == current->pairEdge->start->v)
 			{
-				// std::cout << "here\n";
+				 std::cout << "here\n";
 				current = current->nextEdge->nextEdge;
-			}
+			}*/
+			if (find(EVs.begin(), EVs.end(), current->nextEdge->start) != EVs.end())
+				current = current->nextEdge->nextEdge;
 			else
 			{
+				p = (current->start->v + FVs[current->f->id]->v + current->pairEdge->start->v + FVs[current->pairEdge->f->id]->v) / 4.0f;
 				Vertex* v0 = new Vertex();
 				v0->v = p;
 				HalfEdge* HEnext = new HalfEdge();
@@ -633,6 +563,9 @@ void Geometry::subdivideMesh(Mesh * mesh)
 				HEnext->pairEdge->pairEdge = HEnext;
 				HEnext->pairEdge->nextEdge = HEpair;
 
+				HEnext->f = f;
+				HEpair->f = current->pairEdge->f;
+
 				current->nextEdge = HEnext;
 				current->pairEdge = HEpair;
 
@@ -642,11 +575,12 @@ void Geometry::subdivideMesh(Mesh * mesh)
 			}
 		} while (current != f->e);
 	}
-
+	std::cout << "SPLITING EDGES COMPLETE" << std::endl;
+//	std::cout << mesh->idCounter << std::endl;
 	// now we add edges and faces so every face now has 4 faces
-	for (Face* f:faces)
+	for (Face* f:mesh->faces)
 	{
-		std::cout << "Face: " << f->id << "\n";
+//		std::cout << "Face: " << f->id << "\n";
 
 		HalfEdge* current = f->e;
 		HalfEdge* prevE;
@@ -654,67 +588,83 @@ void Geometry::subdivideMesh(Mesh * mesh)
 		// gets the edge that connects to the start edge
 		do
 		{
-			lastE = current;
+//			std::cout << current->f->id << std::endl;
+			prevE = current;
 			current = current->nextEdge;
 		} while (current!= f->e);
-
+		current = f->e;
 		do
 		{
-			std::cout << current->f->id << "\n";
+//			std::cout << current->f->id << "\n";
 
 			HalfEdge* HE1 = new HalfEdge();
 			HalfEdge* HE2 = new HalfEdge();
 			HE1->nextEdge = HE2;
 			HE2->nextEdge = prevE;
-
+		
 			if (current != f->e) {
 				HE2->pairEdge=lastE;
 				lastE->pairEdge=HE2;
-
 				Face* nf = new Face();	// creates n-1 new faces
 				current->f = nf;
 				HE1->f = nf;
 				HE2->f = nf;
 				prevE->f = nf;
-				nf->id = 0; // NEEDS UNIQUE ID
+//				nf->id = 0; // NEEDS UNIQUE ID
+				nf->e = current;
+//				nf->elevation = 0;
+				nf->id = mesh->idCounter; // NEEDS UNIQUE ID
+				mesh->idCounter++;
 
 				newFaces.push_back(nf);
+//				std::cout << newFaces.size() << std::endl;
 			}
 			else
 			{ // first face is the orignal face with new values
+				
 				HE1->f = f;
 				HE2->f = f;
+				
+//				std::cout << "fasdfadsfasdf" << std::endl;
 				prevE->f = f;
 			}
-
+			
+			std::cout << current->f->id << std::endl;
 			prevE = current->nextEdge;
 			current->nextEdge = HE1;
 			current = prevE->nextEdge;
 			lastE = HE1;
-		} while (current != f->e);
-
-		std::cout << "here\n";
+		} while (current != f->e);// && counter < nEdges);
+	std::cout << "here\n";
 		f->e->nextEdge->nextEdge->pairEdge = lastE;
 		lastE = f->e->nextEdge->nextEdge->pairEdge;
 	}
+	
+	std::cout << "FACES COMPLETE" << std::endl;
+	
+	
+//	std::cout << vertices.size() << std::endl;
 	// changes values of vertices (excluding new EVs and FVs)
-	for (Vertex* v0 : vertices) {
+	for (Vertex* v0 : mesh->vertices) {
 		float nADJ = 1.0f;
+		
 		HalfEdge* current = v0->e; // MIGHT NOT HAVE ASSIGNED THIS IN PROGRAM.CPP AFTER OBJLOADING
 		do {
 			v0->v += current->pairEdge->start->v;
 			current = current->pairEdge->nextEdge;
 			nADJ++;
 		} while (current != v0->e);
-
-		v0->v = v0->v/nADJ;
+		v0->v = v0->v/nADJ;	
 	}
-
 	// add the new vertices to the lsit of vertices
 	for (Vertex* v0 : FVs)
-		vertices.push_back(v0);
+		mesh->vertices.push_back(v0);
 	for (Vertex* v0 : EVs)
-		vertices.push_back(v0);
+		mesh->vertices.push_back(v0);
 	for (Face* f0 : newFaces)
-		faces.push_back(f0);
+		mesh->faces.push_back(f0);
+	
+
+	this->clearGeometry();
+	this->makeModel(mesh->faces);
 }

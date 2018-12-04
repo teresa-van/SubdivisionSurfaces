@@ -38,7 +38,7 @@ void Program::setupWindow()
 //	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_SAMPLES, 16);
-	glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_FALSE);
+//	glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_FALSE);
 
 	window = glfwCreateWindow(1024, 1024, "Subdivision Surfaces", NULL, NULL);
 	glfwMakeContextCurrent(window);
@@ -80,7 +80,7 @@ std::vector<Geometry*> InputHandler::stuff;
 Mesh * InputHandler::mesh;
 
 int InputHandler::lastID = 0;
-int InputHandler::idCounter = 0;
+//int InputHandler::idCounter = 0;
 int InputHandler::pickedID = -1;
 std::vector<int> InputHandler::pickedIDs;
 bool InputHandler::multiPick = false;
@@ -112,6 +112,7 @@ void Program::mainLoop()
 		p->v = v;
 		vList.push_back(p);
 	}
+	std::cout << vList.size() << std::endl;
 
 	for (std::vector<int> f : faces)
 	{
@@ -119,7 +120,7 @@ void Program::mainLoop()
 		fList.push_back(fa);
 		fa->elevation = 0;
 	}
-
+	
 	int faceIndex = 0;
 	for (std::vector<int> face : faces)
 	{
@@ -139,6 +140,7 @@ void Program::mainLoop()
 
 			Edges[uv]->f = fList[faceIndex];
 			Edges[uv]->start = vList[face[u]-1];
+			vList[face[u]-1]->e = Edges[uv];
 			fList[faceIndex]->e = Edges[uv];
 		}
 
@@ -169,9 +171,11 @@ void Program::mainLoop()
 			}
 		}
 
-		fList[faceIndex]->id = InputHandler::idCounter;
-		Geometry::EdgeIDs[InputHandler::idCounter] = fList[InputHandler::idCounter];
-		InputHandler::idCounter++;
+//		fList[faceIndex]->id = InputHandler::idCounter;
+		fList[faceIndex]->id = faceIndex;
+//		Geometry::EdgeIDs[InputHandler::idCounter] = fList[InputHandler::idCounter];
+		Geometry::EdgeIDs[faceIndex] = fList[faceIndex];
+//		InputHandler::idCounter++;
 		faceIndex++;
 	}
 
@@ -190,8 +194,10 @@ void Program::mainLoop()
 		InputHandler::mesh->faces.push_back(f);
 	for (Vertex * v : vList)
 		InputHandler::mesh->vertices.push_back(v);
+	InputHandler::mesh->idCounter = faceIndex;
 
-	InputHandler::lastID = InputHandler::idCounter;
+//	InputHandler::lastID = InputHandler::idCounter;
+	InputHandler::lastID = faceIndex;
 	Geometry* model = new Geometry();
 	model->makeModel(fList);
 	model->modelMatrix = glm::rotate(model->modelMatrix, glm::radians(180.0f), glm::vec3(0.0f,1.0f,0.0f));

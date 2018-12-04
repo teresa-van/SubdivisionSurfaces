@@ -36,6 +36,7 @@ struct Mesh
 {
 	std::vector<Face*> faces;
 	std::vector<Vertex*> vertices;
+	int idCounter;
 };
 
 
