@@ -499,6 +499,7 @@ void Geometry::subdivideMesh(Mesh * mesh)
 		} while (current!= f->e);
 
 		v0->v = v0->v/nEdges;
+
 //		v0->v = (current->start->v + current->nextEdge->nextEdge->start->v)/2.0f;
 		FVs.push_back(v0);
 
@@ -539,14 +540,19 @@ void Geometry::subdivideMesh(Mesh * mesh)
 				 std::cout << "here\n";
 				current = current->nextEdge->nextEdge;
 			}*/
+			// std::cout << current->f->id << " <- face id \n";
+
 			if (find(EVs.begin(), EVs.end(), current->nextEdge->start) != EVs.end())
+			{
 				current = current->nextEdge->nextEdge;
+			}
 			else
 			{
 				p = (current->start->v + FVs[current->f->id]->v + current->pairEdge->start->v + FVs[current->pairEdge->f->id]->v) / 4.0f;
 //				p = (current->start->v + current->nextEdge->start->v)/2.0f;
 				Vertex* v0 = new Vertex();
 				v0->v = p;
+
 				HalfEdge* HEnext = new HalfEdge();
 				HalfEdge* HEpair = new HalfEdge();
 
@@ -572,6 +578,7 @@ void Geometry::subdivideMesh(Mesh * mesh)
 				current->nextEdge = HEnext;
 				current->pairEdge = HEpair;
 
+				v0->e = HEnext;
 				EVs.push_back(v0);
 				// current = HEnext->nextEdge;
 				current = current->nextEdge->nextEdge;
@@ -606,7 +613,8 @@ void Geometry::subdivideMesh(Mesh * mesh)
 			HE2->nextEdge = prevE;
 			HE1->start = current->nextEdge->start;
 			HE2->start = FVs[current->f->id];
-		
+			FVs[current->f->id]->e = HE2;
+
 			if (current != f->e) {
 				HE2->pairEdge=lastE;
 				lastE->pairEdge=HE2;
@@ -626,15 +634,14 @@ void Geometry::subdivideMesh(Mesh * mesh)
 			}
 			else
 			{ // first face is the orignal face with new values
-				
+
 				HE1->f = f;
 				HE2->f = f;
-				
+
 //				std::cout << "fasdfadsfasdf" << std::endl;
 				prevE->f = f;
 			}
-			
-//			std::cout << current->f->id << std::endl;
+
 			prevE = current->nextEdge;
 			current->nextEdge = HE1;
 			current = prevE->nextEdge;
@@ -644,23 +651,26 @@ void Geometry::subdivideMesh(Mesh * mesh)
 		f->e->nextEdge->nextEdge->pairEdge = lastE;
 		lastE = f->e->nextEdge->nextEdge->pairEdge;
 	}
-	
+
 	std::cout << "FACES COMPLETE" << std::endl;
-	
-	
+
+
 //	std::cout << vertices.size() << std::endl;
 	// changes values of vertices (excluding new EVs and FVs)
+	// std::cout << mesh->vertices.size() << std::endl;
 	for (Vertex* v0 : mesh->vertices) {
 		float nADJ = 1.0f;
-		
 		HalfEdge* current = v0->e; // MIGHT NOT HAVE ASSIGNED THIS IN PROGRAM.CPP AFTER OBJLOADING
 		do {
+			// v0->v += FVs[current->f->id]->v;
 			v0->v += current->pairEdge->start->v;
 			current = current->pairEdge->nextEdge;
-			nADJ++;
+			nADJ+=1;
 		} while (current != v0->e);
-		v0->v = v0->v/nADJ;	
+		v0->v = v0->v/nADJ;
 	}
+
+
 	// add the new vertices to the lsit of vertices
 	for (Vertex* v0 : FVs)
 		mesh->vertices.push_back(v0);
@@ -668,8 +678,8 @@ void Geometry::subdivideMesh(Mesh * mesh)
 		mesh->vertices.push_back(v0);
 	for (Face* f0 : newFaces)
 		mesh->faces.push_back(f0);
-	
-	
+
+
 /*	for (Face* f : mesh->faces) {
 		HalfEdge* current = f->e;
 		std::cout << f->id << std::endl;
@@ -682,6 +692,9 @@ void Geometry::subdivideMesh(Mesh * mesh)
 		std::cout << std::endl;
 	}
 */
+
 	this->clearGeometry();
 	this->makeModel(mesh->faces);
+
+	std::cout << "SUBDIVISION COMPLETE" << std::endl;
 }
