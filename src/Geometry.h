@@ -81,4 +81,7 @@ public:
 	
 	void elevateFace(int fID, float h);
 	
+	
+	void subdivideMesh();
+	
 };

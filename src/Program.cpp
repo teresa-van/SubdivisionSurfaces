@@ -48,6 +48,7 @@ void Program::setupWindow() {
 }
 
 bool InputHandler::lefthold = false;
+bool InputHandler::righthold = false;
 glm::vec3 InputHandler::camPos = glm::vec3(0.0f,.0f,0.0f);
 glm::vec3 InputHandler::camDir = glm::vec3(0.0f,0.0f, -1.0f);
 glm::vec3 InputHandler::camUp = glm::vec3(0.0f, 1.0f, 0.0f);

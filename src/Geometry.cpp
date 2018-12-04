@@ -546,3 +546,114 @@ void Geometry::elevateFace(int fID, float height) {
 	
 }
 
+void Geometry::subdivideMesh() { 
+	// CHECK SCOPES
+	std::vector<Face*> faces;	// all faces on mesh, might have to be global
+	std::vector<Vertex*> vertices; // all vertices on mesh, might have to be global
+	std::vector<Face*> newFaces;
+	std::vector<Vertex*> FVs;
+	std::vector<Vertex*> EVs;
+	
+	//Creates a lsit of new vertices per face
+	for (Face* f:faces) {
+		Vertex* v0 = new Vertex();
+		HalfEdge* current = f->e;
+		v0->v = glm::vec3(0.0f);
+		float nEdges = 0.0f;
+		do {
+			v0->v += current->start->v;
+			nEdges++;
+		} while (current!= f->e);
+		v0->v = v0->v/nEdges;
+		FVs.push_back(v0);
+	}
+	//Creates list of new vertices per edge
+	for (Face* f:faces) {
+		glm::vec3 p = glm::vec3(0.0f);
+		HalfEdge* current = f->e;
+		do {
+			p = (current->start->v + FVs[current->f->id]->v +current->pairEdge->start->v + FVs[current->pairEdge->f->id]->v)/4.0f;
+			// checks if the edge has already been split
+			if (p == current->pairEdge->start->v) 
+				current = current->nextEdge->nextEdge;
+			else {
+				Vertex* v0 = new Vertex();
+				v0->v = p;
+				HalfEdge* HEnext = new HalfEdge();
+				HalfEdge* HEpair = new HalfEdge();
+				// updates edges next edge and pair edge
+				// for now, every face will have twice as many vertics it started with
+				HEnext->nextEdge = current->nextEdge;
+				HEnext->pairEdge = current->pairEdge;
+				HEnext->start = v0;
+				HEpair->nextEdge = current->pairEdge->nextEdge;
+				HEpair->pairEdge = current;
+				HEpair->start = v0;
+				current->pairEdge->pairEdge = HEnext;
+				current->pairEdge->nextEdge = HEpair;
+				EVs.push_back(v0);
+				current = HEnext->nextEdge;
+			}
+		} while (current != f->e);
+	}
+	// now we add edges and faces so every face now has 4 faces
+	for (Face* f:faces) {
+		HalfEdge* current = f->e;
+		HalfEdge* prevE;
+		HalfEdge* lastE;
+		// gets the edge that connects to the start edge
+		do {
+			lastE = current;
+			current = current->nextEdge;
+		}
+		while (current!= f->e);
+		do {
+			HalfEdge* HE1 = new HalfEdge();
+			HalfEdge* HE2 = new HalfEdge();
+			HE1->nextEdge = HE2;
+			HE2->nextEdge = prevE;
+			if (current != f->e) {
+				HE2->pairEdge=lastE;
+				lastE->pairEdge=HE2;
+				Face* nf = new Face();	// creates n-1 new faces
+				current->f = nf;
+				HE1->f = nf;
+				HE2->f = nf;
+				prevE->f = nf;
+				nf->id = 0; // NEEDS UNIQUE ID
+				newFaces.push_back(nf);
+			}
+			else { // first face is the orignal face with new values
+				HE1->f = f;
+				HE2->f = f;
+				prevE->f = f;
+			}
+			prevE = current->nextEdge;
+			current->nextEdge = HE1;
+			current = prevE->nextEdge;
+			lastE = HE1;
+		} while (current != f->e);
+		f->e->nextEdge->nextEdge->pairEdge = lastE;
+		lastE = f->e->nextEdge->nextEdge->pairEdge;
+	}
+	// changes values of vertices (excluding new EVs and FVs)
+	for (Vertex* v0 : vertices) {
+		float nADJ = 1.0f;
+		HalfEdge* current = v0->e; // MIGHT NOT HAVE ASSIGNED THIS IN PROGRAM.CPP AFTER OBJLOADING
+		do {
+			v0->v += current->pairEdge->start->v;
+			current = current->pairEdge->nextEdge;
+			nADJ++;
+		} while (current != v0->e);
+		v0->v = v0->v/nADJ;
+	}
+	// add the new vertices to the lsit of vertices
+	for (Vertex* v0 : FVs) 
+		vertices.push_back(v0);	
+	for (Vertex* v0 : EVs) 
+		vertices.push_back(v0);
+	for (Face* f0 : newFaces)
+		faces.push_back(f0);
+		
+}
+

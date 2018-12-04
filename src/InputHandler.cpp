@@ -156,6 +156,17 @@ void InputHandler::mouse(GLFWwindow* window, int button, int action, int mods) {
 //		oldyclick=thetaY;
 
 	}
+	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
+	{	
+		righthold = true;
+	}
+	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE)
+	{
+		righthold = false;
+//		oldxclick=thetaX;
+//		oldyclick=thetaY;
+
+	}
 //	std::cout<< xclick << std::endl;
 	renderGeometries();
 }
@@ -198,7 +209,7 @@ void InputHandler::motion(GLFWwindow* window, double x, double y) {
 	float dt = diff.x;
 	float dp = diff.y;
 		
-	if (lefthold) {	
+	if (righthold) {	
 //		glm::vec3 oldCamDir = camDir;
 		cameraController(glm::vec3(-dp, dt, 0.0f));
 		renderGeometries();

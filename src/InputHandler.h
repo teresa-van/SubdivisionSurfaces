@@ -23,6 +23,7 @@ public:
 	static double yclick;
 	
 	static bool lefthold;
+	static bool righthold;
 	static glm::vec3 camPos;
 	static glm::vec3 camDir;
 	static glm::vec3 camUp;
