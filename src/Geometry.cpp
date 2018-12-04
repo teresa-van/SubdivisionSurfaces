@@ -546,7 +546,8 @@ void Geometry::elevateFace(int fID, float height) {
 
 }
 
-void Geometry::subdivideMesh(Mesh * mesh) {
+void Geometry::subdivideMesh(Mesh * mesh)
+{
 	// CHECK SCOPES
 	std::vector<Face*> faces = mesh->faces;	// all faces on mesh, might have to be global
 	std::vector<Vertex*> vertices = mesh->vertices; // all vertices on mesh, might have to be global
@@ -555,89 +556,144 @@ void Geometry::subdivideMesh(Mesh * mesh) {
 	std::vector<Vertex*> EVs;
 
 	//Creates a lsit of new vertices per face
-	for (Face* f:faces) {
-
-		std::cout << "1. Face: " << f->id << "\n";
+	for (Face* f : faces)
+	{
+		// std::cout << "1. Face: " << f->id << "\n";
 
 		Vertex* v0 = new Vertex();
 		HalfEdge* current = f->e;
 		v0->v = glm::vec3(0.0f);
 		float nEdges = 0.0f;
-		do {
+
+		do
+		{
 			v0->v += current->start->v;
 			nEdges++;
 		} while (current!= f->e);
+
 		v0->v = v0->v/nEdges;
 		FVs.push_back(v0);
+
+		// std::cout << current->f->id << " <- current \n";
+		// std::cout << current->pairEdge->f->id << " <- pair \n";
+		// HalfEdge* c = current;
+		//
+		// do
+		// {
+		// 	std::cout << c->f->id << " <- next \n";
+		// 	c = c->nextEdge;
+		// } while(c != f->e);
+		//
+		// std::cout << "\n";
 	}
+
+	// std::cout << "\n";
+
 	//Creates list of new vertices per edge
-	for (Face* f:faces) {
-		std::cout << "2. Face: " << f->id << "\n";
+	for (Face* f : faces)
+	{
+		std::cout << "\n2. Face: " << f->id << "\n";
 
 		glm::vec3 p = glm::vec3(0.0f);
 		HalfEdge* current = f->e;
-		do {
-			p = (current->start->v + FVs[current->f->id]->v +current->pairEdge->start->v + FVs[current->pairEdge->f->id]->v)/4.0f;
+		do
+		{
+			std::cout << current->f->id << " <- current \n";
+			std::cout << current->pairEdge->f->id << " <- pair \n";
+
+			p = (current->start->v + FVs[current->f->id]->v + current->pairEdge->start->v + FVs[current->pairEdge->f->id]->v) / 4.0f;
+			// std::cout << "here 2\n";
+
 			// checks if the edge has already been split
 			if (p == current->pairEdge->start->v)
+			{
+				// std::cout << "here\n";
 				current = current->nextEdge->nextEdge;
-			else {
+			}
+			else
+			{
 				Vertex* v0 = new Vertex();
 				v0->v = p;
 				HalfEdge* HEnext = new HalfEdge();
 				HalfEdge* HEpair = new HalfEdge();
+
 				// updates edges next edge and pair edge
 				// for now, every face will have twice as many vertics it started with
 				HEnext->nextEdge = current->nextEdge;
 				HEnext->pairEdge = current->pairEdge;
 				HEnext->start = v0;
+
 				HEpair->nextEdge = current->pairEdge->nextEdge;
 				HEpair->pairEdge = current;
 				HEpair->start = v0;
-				current->pairEdge->pairEdge = HEnext;
-				current->pairEdge->nextEdge = HEpair;
+
+				// current->pairEdge->pairEdge = HEnext;
+				// current->pairEdge->nextEdge = HEpair;
+
+				HEnext->pairEdge->pairEdge = HEnext;
+				HEnext->pairEdge->nextEdge = HEpair;
+
+				current->nextEdge = HEnext;
+				current->pairEdge = HEpair;
+
 				EVs.push_back(v0);
-				current = HEnext->nextEdge;
+				// current = HEnext->nextEdge;
+				current = current->nextEdge->nextEdge;
 			}
 		} while (current != f->e);
 	}
+
 	// now we add edges and faces so every face now has 4 faces
-	for (Face* f:faces) {
+	for (Face* f:faces)
+	{
+		std::cout << "Face: " << f->id << "\n";
+
 		HalfEdge* current = f->e;
 		HalfEdge* prevE;
 		HalfEdge* lastE;
 		// gets the edge that connects to the start edge
-		do {
+		do
+		{
 			lastE = current;
 			current = current->nextEdge;
-		}
-		while (current!= f->e);
-		do {
+		} while (current!= f->e);
+
+		do
+		{
+			std::cout << current->f->id << "\n";
+
 			HalfEdge* HE1 = new HalfEdge();
 			HalfEdge* HE2 = new HalfEdge();
 			HE1->nextEdge = HE2;
 			HE2->nextEdge = prevE;
+
 			if (current != f->e) {
 				HE2->pairEdge=lastE;
 				lastE->pairEdge=HE2;
+
 				Face* nf = new Face();	// creates n-1 new faces
 				current->f = nf;
 				HE1->f = nf;
 				HE2->f = nf;
 				prevE->f = nf;
 				nf->id = 0; // NEEDS UNIQUE ID
+
 				newFaces.push_back(nf);
 			}
-			else { // first face is the orignal face with new values
+			else
+			{ // first face is the orignal face with new values
 				HE1->f = f;
 				HE2->f = f;
 				prevE->f = f;
 			}
+
 			prevE = current->nextEdge;
 			current->nextEdge = HE1;
 			current = prevE->nextEdge;
 			lastE = HE1;
 		} while (current != f->e);
+
+		std::cout << "here\n";
 		f->e->nextEdge->nextEdge->pairEdge = lastE;
 		lastE = f->e->nextEdge->nextEdge->pairEdge;
 	}
@@ -650,8 +706,10 @@ void Geometry::subdivideMesh(Mesh * mesh) {
 			current = current->pairEdge->nextEdge;
 			nADJ++;
 		} while (current != v0->e);
+
 		v0->v = v0->v/nADJ;
 	}
+
 	// add the new vertices to the lsit of vertices
 	for (Vertex* v0 : FVs)
 		vertices.push_back(v0);
@@ -659,5 +717,4 @@ void Geometry::subdivideMesh(Mesh * mesh) {
 		vertices.push_back(v0);
 	for (Face* f0 : newFaces)
 		faces.push_back(f0);
-
 }
