@@ -20,12 +20,14 @@ struct HalfEdge {
 	Face* f;
 	float sharpness;
 };
+
 struct Vertex {
 //	float x, y, z;
 	glm::vec3 v;
 	glm::vec3 vn;
 	HalfEdge* e;
 };
+
 struct Face {
 	HalfEdge* e;
 	int id;
@@ -90,5 +92,5 @@ public:
 
 
 	void subdivideMesh(Mesh* mesh);
-
+	void subdivideFaces(Mesh* mesh, std::vector<int> pickedIDs);
 };

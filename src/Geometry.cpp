@@ -713,3 +713,203 @@ void Geometry::subdivideMesh(Mesh * mesh)
 
 	std::cout << "SUBDIVISION COMPLETE" << std::endl;
 }
+
+void Geometry::subdivideFaces(Mesh * mesh, std::vector<int> pickedIDs)
+{
+	// CHECK SCOPES
+	std::vector<Face*> newFaces;
+	std::vector<Vertex*> FVs;
+	std::vector<Vertex*> EVs;
+
+	std::vector<Vertex*> selectedFaceVerts;
+	std::vector<Face*> selectedFaces;
+
+	for (Face* f : mesh->faces)
+	{
+		if (find(pickedIDs.begin(), pickedIDs.end(), f->id) != pickedIDs.end())
+			selectedFaces.push_back(f);
+	}
+
+	//Creates a lsit of new vertices per face
+	for (Face* f : selectedFaces)
+	{
+		Vertex* v0 = new Vertex();
+		HalfEdge* current = f->e;
+		v0->v = glm::vec3(0.0f);
+		float nEdges = 0.0f;
+
+		do
+		{
+			v0->v += current->start->v;
+			nEdges++;
+
+			selectedFaceVerts.push_back(current->start);
+
+			current = current->nextEdge;
+		} while (current!= f->e);
+
+		v0->v = v0->v/nEdges;
+
+		FVs.push_back(v0);
+	}
+
+	int counter = 0;
+	//Creates list of new vertices per edge
+	for (Face* f : selectedFaces)
+	{
+		glm::vec3 p = glm::vec3(0.0f);
+		HalfEdge* current = f->e;
+		do
+		{
+			if (find(EVs.begin(), EVs.end(), current->nextEdge->start) != EVs.end())
+			{
+				current = current->nextEdge->nextEdge;
+			}
+			else
+			{
+
+				glm::vec3 fvsOpp = glm::vec3(0.0f);
+				HalfEdge* c = current->pairEdge;
+				float x = 0.0f;
+				do
+				{
+					fvsOpp += c->start->v;
+					x++;
+					c = c->nextEdge;
+				} while (c!= current->pairEdge);
+				fvsOpp = fvsOpp / x;
+				// std::cout << fvsOpp.x << "\n";
+
+				p = (current->start->v + FVs[counter]->v + current->pairEdge->start->v + fvsOpp) / 4.0f;
+				// p = (current->start->v + FVs[current->f->id]->v + current->pairEdge->start->v + FVs[current->pairEdge->f->id]->v) / 4.0f;
+				// p = (current->start->v + current->pairEdge->start->v) / 2.0f;
+
+				Vertex* v0 = new Vertex();
+				v0->v = p;
+
+				HalfEdge* HEnext = new HalfEdge();
+				HalfEdge* HEpair = new HalfEdge();
+
+				// updates edges next edge and pair edge
+				// for now, every face will have twice as many vertics it started with
+				HEnext->nextEdge = current->nextEdge;
+				HEnext->pairEdge = current->pairEdge;
+				HEnext->start = v0;
+
+				HEpair->nextEdge = current->pairEdge->nextEdge;
+				HEpair->pairEdge = current;
+				HEpair->start = v0;
+
+				HEnext->pairEdge->pairEdge = HEnext;
+				HEnext->pairEdge->nextEdge = HEpair;
+
+				HEnext->f = f;
+				HEpair->f = current->pairEdge->f;
+
+				current->nextEdge = HEnext;
+				current->pairEdge = HEpair;
+
+				v0->e = HEnext;
+				EVs.push_back(v0);
+				current = current->nextEdge->nextEdge;
+			}
+		} while (current != f->e);
+	}
+
+	std::cout << "SPLITING EDGES COMPLETE" << std::endl;
+	// now we add edges and faces so every face now has 4 faces
+	counter = 0;
+	for (Face* f : selectedFaces)
+	{
+		HalfEdge* current = f->e;
+		HalfEdge* prevE;
+		HalfEdge* lastE;
+		// gets the edge that connects to the start edge
+		do
+		{
+			prevE = current;
+			current = current->nextEdge;
+		} while (current!= f->e);
+		current = f->e;
+		do
+		{
+			HalfEdge* HE1 = new HalfEdge();
+			HalfEdge* HE2 = new HalfEdge();
+
+			HE1->nextEdge = HE2;
+			HE2->nextEdge = prevE;
+			HE1->start = current->nextEdge->start;
+			HE2->start = FVs[counter];
+			FVs[counter]->e = HE2;
+
+			if (current != f->e) {
+				HE2->pairEdge=lastE;
+				lastE->pairEdge=HE2;
+				Face* nf = new Face();	// creates n-1 new faces
+				current->f = nf;
+				HE1->f = nf;
+				HE2->f = nf;
+				prevE->f = nf;
+				nf->e = current;
+				nf->id = mesh->idCounter; // NEEDS UNIQUE ID
+				mesh->idCounter++;
+
+				newFaces.push_back(nf);
+			}
+			else
+			{ // first face is the orignal face with new values
+				HE1->f = f;
+				HE2->f = f;
+				prevE->f = f;
+			}
+
+			prevE = current->nextEdge;
+			current->nextEdge = HE1;
+			current = prevE->nextEdge;
+			lastE = HE1;
+		} while (current != f->e);// && counter < nEdges);
+		f->e->nextEdge->nextEdge->pairEdge = lastE;
+		lastE = f->e->nextEdge->nextEdge->pairEdge;
+		counter++;
+	}
+
+	std::cout << "FACES COMPLETE" << std::endl;
+	// changes values of vertices (excluding new EVs and FVs)
+
+	for (Vertex* v0 : selectedFaceVerts)
+	{
+		float nADJ = 0.0f;
+		glm::vec3 ve = glm::vec3(0.0f);
+		glm::vec3 vf = glm::vec3(0.0f);
+
+
+		HalfEdge* current = v0->e; // MIGHT NOT HAVE ASSIGNED THIS IN PROGRAM.CPP AFTER OBJLOADING
+		do
+		{
+			// std::cout << v0->e->f->id << "\n";
+
+			ve+=current->pairEdge->start->v;
+			vf+=current->nextEdge->nextEdge->start->v;
+			current = current->pairEdge->nextEdge;
+			nADJ++;
+		} while (current != v0->e);
+
+		v0->v = (nADJ-2)*v0->v/nADJ+ve/(nADJ*nADJ)+vf/(nADJ*nADJ);
+
+	}
+
+	// add the new vertices to the lsit of vertices
+	for (Vertex* v0 : FVs)
+		mesh->vertices.push_back(v0);
+	for (Vertex* v0 : EVs)
+		mesh->vertices.push_back(v0);
+	for (Face* f0 : newFaces)
+		mesh->faces.push_back(f0);
+
+	// std::cout << mesh->vertices.size() << " <- # of vertices\n";
+
+	this->clearGeometry();
+	this->makeModel(mesh->faces);
+
+	std::cout << "SUBDIVISION COMPLETE" << std::endl;
+}

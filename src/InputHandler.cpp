@@ -58,7 +58,7 @@ void InputHandler::key(GLFWwindow* window, int key, int scancode, int action, in
 
 	if (key == GLFW_KEY_SPACE && action == GLFW_RELEASE)
 		for (Geometry * g : stuff)
-			g->subdivideMesh(mesh);
+			g->subdivideFaces(mesh, pickedIDs);
 /*	if (key == GLFW_KEY_UP && (action == GLFW_PRESS||action == GLFW_REPEAT))
 		elevate = -1.0f;
 	if (key == GLFW_KEY_DOWN && (action == GLFW_PRESS||action == GLFW_REPEAT))
