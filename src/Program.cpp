@@ -145,6 +145,9 @@ void Program::mainLoop()
 			fList[faceIndex]->e = Edges[uv];
 		}
 
+
+		Vertex* v0 = new Vertex();
+		v0->v = glm::vec3(0.0f);
 		for (int i=0; i<face.size(); i++)
 		{
 			int u, v, unext, vnext;
@@ -170,7 +173,11 @@ void Program::mainLoop()
 				Edges[uv]->pairEdge = Edges[vu];
 				Edges[vu]->pairEdge = Edges[uv];
 			}
+
+			v0->v += Edges[uv]->start->v;
 		}
+		v0->v = v0->v / (float)face.size();
+		fList[faceIndex]->center = v0;
 
 //		fList[faceIndex]->id = InputHandler::idCounter;
 		fList[faceIndex]->id = faceIndex;

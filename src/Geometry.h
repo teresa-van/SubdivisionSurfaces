@@ -32,6 +32,7 @@ struct Face {
 	HalfEdge* e;
 	int id;
 	int elevation;
+	Vertex* center;
 };
 
 struct Mesh
@@ -92,5 +93,5 @@ public:
 
 
 	void subdivideMesh(Mesh* mesh);
-	void subdivideFaces(Mesh* mesh, std::vector<int> pickedIDs);
+	void subdivideFaces(Mesh* mesh, std::vector<int> *pickedIDs);
 };
