@@ -766,167 +766,182 @@ void Geometry::subdivideFaces(Mesh * mesh, std::vector<int> *pickedIDs)
 
 				v0->e = HEnext;
 				EVs.push_back(v0);
-
-				//T-JUNCTIONS GO HERE I THINK
-				//T-JUNCTIONS GO HERE I THINK
-				//T-JUNCTIONS GO HERE I THINK
-				//T-JUNCTIONS GO HERE I THINK
-				//T-JUNCTIONS GO HERE I THINK
-				//T-JUNCTIONS GO HERE I THINK
-				//T-JUNCTIONS GO HERE I THINK
-				//T-JUNCTIONS GO HERE I THINK
-				//T-JUNCTIONS GO HERE I THINK
-				//T-JUNCTIONS GO HERE I THINK
-				//T-JUNCTIONS GO HERE I THINK
-				//T-JUNCTIONS GO HERE I THINK
-				//T-JUNCTIONS GO HERE I THINK
-				//T-JUNCTIONS GO HERE I THINK
-				//T-JUNCTIONS GO HERE I THINK
-				//T-JUNCTIONS GO HERE I THINK
-				//T-JUNCTIONS GO HERE I THINK
-				//T-JUNCTIONS GO HERE I THINK
-				//T-JUNCTIONS GO HERE I THINK
-
-
-
-				// current = HEnext->nextEdge;
 				current = current->nextEdge->nextEdge;
 			}
 		} while (current != f->e);
 	}
-//	std::cout << unselectedAdjFaces.size() << std::endl;
-//	for (Face* f : unselectedAdjFaces)
-//		std::cout << f->id << std::endl;
+
 	std::cout << "SPLITING EDGES COMPLETE" << std::endl;
-//	std::cout << mesh->idCounter << std::endl;
 	// now we add edges and faces so every face now has 4 faces
 	for (Face* f:selectedFaces)
 	{
-//		std::cout << "Face: " << f->id << "\n";
-
 		HalfEdge* current = f->e;
-		HalfEdge* prevE;
-		HalfEdge* lastE;
-		// gets the edge that connects to the start edge
-		do
-		{
-//			std::cout << current->f->id << std::endl;
-			prevE = current;
+		while (find(EVs.begin(), EVs.end(), current->start) == EVs.end())
 			current = current->nextEdge;
-		} while (current!= f->e);
-		current = f->e;
-		do
-		{
-			// std::cout << current->f->id << "\n";
 
-			HalfEdge* HE1 = new HalfEdge();
-			HalfEdge* HE2 = new HalfEdge();
-			HE1->nextEdge = HE2;
-			HE2->nextEdge = prevE;
-			HE1->start = current->nextEdge->start;
-			HE2->start = current->f->center;
+		HalfEdge* HE1 = current->nextEdge;
+		HalfEdge* HE2 = HE1->nextEdge;
+		HalfEdge* HE3 = HE2->nextEdge;
+		HalfEdge* HE4 = HE3->nextEdge;
+		HalfEdge* HE5 = HE4->nextEdge;
+		HalfEdge* HE6 = HE5->nextEdge;
+		HalfEdge* HE7 = HE6->nextEdge;
 
-			current->f->center->e = HE2;
+		HalfEdge* HE1next = new HalfEdge();
+		HalfEdge* HE2next = new HalfEdge();
+		HalfEdge* HE3next = new HalfEdge();
+		HalfEdge* HE4next = new HalfEdge();
 
-			if (current != f->e) {
-				HE2->pairEdge=lastE;
-				lastE->pairEdge=HE2;
+		HalfEdge* HE1pair = new HalfEdge();
+		HalfEdge* HE2pair = new HalfEdge();
+		HalfEdge* HE3pair = new HalfEdge();
+		HalfEdge* HE4pair = new HalfEdge();
 
-				Face* nf = new Face();	// creates n-1 new faces
-				current->f = nf;
-				HE1->f = nf;
-				HE2->f = nf;
-				prevE->f = nf;
-//				nf->id = 0; // NEEDS UNIQUE ID
-				nf->e = current;
-//				nf->elevation = 0;
-				nf->id = mesh->idCounter; // NEEDS UNIQUE ID
-				mesh->idCounter++;
-				newFaces.push_back(nf);
-				pickedIDs->push_back(nf->id);
-//				std::cout << newFaces.size() << std::endl;
-			}
-			else
-			{ // first face is the orignal face with new values
+		Face* newFace1 = new Face();
+		Face* newFace2 = new Face();
+		Face* newFace3 = new Face();
 
-				HE1->f = f;
-				HE2->f = f;
+		HE1next->start = HE2->start;
+		HE1next->nextEdge = HE4pair;
+		HE1next->pairEdge = HE1pair;
+		HE1next->f = f;
 
-//				std::cout << "fasdfadsfasdf" << std::endl;
-				prevE->f = f;
+		HE2next->start = HE4->start;
+		HE2next->nextEdge = HE1pair;
+		HE2next->pairEdge = HE2pair;
+		HE2next->f = newFace1;
 
-		// 		Vertex* v0 = new Vertex();
-		// 		v0->v = glm::vec3(0.0f);
-		// 		v0->v = v0->v + current->start->v + HE1->start->v + HE2->start->v + prevE->start->v;
-		// 		v0->v = v0->v/4.0f;
-		//
-		// //		v0->v = (current->start->v + current->nextEdge->nextEdge->start->v)/2.0f;
-		// 		// FVs.push_back(v0);
-		// 		f->center = v0;
-			}
+		HE3next->start = HE6->start;
+		HE3next->nextEdge = HE2pair;
+		HE3next->pairEdge = HE3pair;
+		HE3next->f = newFace2;
 
-			prevE = current->nextEdge;
-			current->nextEdge = HE1;
-			current = prevE->nextEdge;
-			lastE = HE1;
-		} while (current != f->e);// && counter < nEdges);
-//	std::cout << "here\n";
-		f->e->nextEdge->nextEdge->pairEdge = lastE;
-		lastE = f->e->nextEdge->nextEdge->pairEdge;
+		HE4next->start = current->start;
+		HE4next->nextEdge = HE3pair;
+		HE4next->pairEdge = HE4pair;
+		HE4next->f = newFace3;
+
+		//pairs
+		HE1pair->start = f->center;
+		HE1pair->nextEdge = HE2;
+		HE1pair->pairEdge = HE1next;
+		HE1pair->f = newFace1;
+
+		HE2pair->start = f->center;
+		HE2pair->nextEdge = HE4;
+		HE2pair->pairEdge = HE2next;
+		HE2pair->f = newFace2;
+
+		HE3pair->start = f->center;
+		HE3pair->nextEdge = HE6;
+		HE3pair->pairEdge = HE3next;
+		HE3pair->f = newFace3;
+
+		HE4pair->start = f->center;
+		HE4pair->nextEdge = current;
+		HE4pair->pairEdge = HE4next;
+		HE4pair->f = f;
+
+		HE1->nextEdge = HE1next;
+		HE3->nextEdge = HE2next;
+		HE5->nextEdge = HE3next;
+		HE7->nextEdge = HE4next;
+
+		HE2->f = newFace1;
+		HE3->f = newFace1;
+		HE4->f = newFace2;
+		HE5->f = newFace2;
+		HE6->f = newFace3;
+		HE7->f = newFace3;
+
+		newFace1->e = HE2;
+		newFace2->e = HE4;
+		newFace3->e = HE6;
+
+		newFace1->id = mesh->idCounter;
+		mesh->idCounter++;
+		newFace2->id = mesh->idCounter;
+		mesh->idCounter++;
+		newFace3->id = mesh->idCounter;
+		mesh->idCounter++;
+
+		pickedIDs->push_back(newFace1->id);
+		pickedIDs->push_back(newFace2->id);
+		pickedIDs->push_back(newFace3->id);
+
+		newFaces.push_back(newFace1);
+		newFaces.push_back(newFace2);
+		newFaces.push_back(newFace3);
+
+		f->e = current;
+		f->center->e = HE1pair;
 	}
 
 	std::cout << "FACES COMPLETE" << std::endl;
 
-	for (Vertex* v0 : selectedFaceVerts) {
+	for (Vertex* v0 : selectedFaceVerts)
+	{
 		float nADJ = 0.0f;
 		glm::vec3 ve = glm::vec3(0.0f);
 		glm::vec3 vf = glm::vec3(0.0f);
 		HalfEdge* current = v0->e; // MIGHT NOT HAVE ASSIGNED THIS IN PROGRAM.CPP AFTER OBJLOADING
 		do
 		{
+			// std::cout << current->f->id << "\n";
 			ve+=current->pairEdge->start->v;
 			vf+=current->nextEdge->nextEdge->start->v;
 			current = current->pairEdge->nextEdge;
 			nADJ++;
 		} while (current != v0->e);
 		v0->v = (nADJ-2)*v0->v/nADJ+ve/(nADJ*nADJ)+vf/(nADJ*nADJ);
+
 	}
 
-
-
-
-	for (Face* f:unselectedAdjFaces) {
+	for (Face* f:unselectedAdjFaces)
+	{
 		HalfEdge* current = f->e;
 		int nVerts = 0;
-		do {
+		do
+		{
 			current = current->nextEdge;
 			nVerts++;
 		} while (current!= f->e);
 		current = f->e;
-		if (nVerts == 4) {
+
+		if (nVerts == 4)
+		{
 			while (find(EVs.begin(), EVs.end(), current->start) == EVs.end())
 				current = current->nextEdge;
-			HalfEdge* HEnext = new HalfEdge();
-			HalfEdge* HEpair = new HalfEdge();
+
 			HalfEdge* HE1 = current->nextEdge;
 			HalfEdge* HE2 = HE1->nextEdge;
 			HalfEdge* HE3 = HE2->nextEdge;
+
 			Face* newF = new Face();
-			HE1->nextEdge = HEnext;
-			HEnext->nextEdge = current;
-			HEnext->f = f;
+
+			HalfEdge* HEnext = new HalfEdge();
+			HalfEdge* HEpair = new HalfEdge();
+
 			HEnext->start = HE2->start;
-			f->e = HEnext;
-			HE3->nextEdge = HEpair;
+			HEnext->nextEdge = current;
+			HEnext->pairEdge = HEpair;
+			HEnext->f = f;
+
+			HEpair->start = current->start;
 			HEpair->nextEdge = HE2;
+			HEpair->pairEdge = HEnext;
+			HEpair->f = newF;
+
+			HE1->nextEdge = HEnext;
+			HE3->nextEdge = HEpair;
+
 			HE3->f = newF;
 			HE2->f = newF;
-			HEpair->f = newF;
-			HEpair->start = current->start;
+
 			newF->e = HEpair;
 			newF->id = mesh->idCounter;
-			HEpair->pairEdge = HEnext;
-			HEnext->pairEdge = HEpair;
+
+			f->e = HEnext;
 
 			mesh->idCounter++;
 			newFaces.push_back(newF);
@@ -941,7 +956,8 @@ void Geometry::subdivideFaces(Mesh * mesh, std::vector<int> *pickedIDs)
 			std::cout << "\n\n\n";
 
 		}
-		if (nVerts == 5) {
+		if (nVerts == 5)
+		{
 			while (find(EVs.begin(), EVs.end(), current->start) == EVs.end())
 				current = current->nextEdge;
 
@@ -955,6 +971,7 @@ void Geometry::subdivideFaces(Mesh * mesh, std::vector<int> *pickedIDs)
 			HalfEdge* HE4 = HE3->nextEdge;
 			Face* newF1 = new Face();
 			Face* newF2 = new Face();
+
 			HE1->nextEdge = HE1next;//HE1
 			HE1next->nextEdge = current;
 			HE1next->start = HE2->start;
@@ -976,57 +993,68 @@ void Geometry::subdivideFaces(Mesh * mesh, std::vector<int> *pickedIDs)
 			HE2next->pairEdge = HE2pair;
 			HE2pair->pairEdge = HE2next;
 
-			HE1next->f = newF1;
 			current->f = newF1;
-			HE1->f = newF1;
+			HE1next->f = newF1;
 			HE1pair->f = f;
-			HE3->f = newF2;
-			HE4->f = newF2;
 			HE2next->f = newF2;
 			HE2pair->f = f;
+			HE1->f = newF1;
+			HE3->f = newF2;
+			HE4->f = newF2;
 
 			HE2pair->nextEdge = HE1pair;
 			HE1pair->nextEdge = HE2;
 			HE2->nextEdge = HE2pair;//nextEdge
+
 			f->e = HE2;
 
 			newFaces.push_back(newF1);
 			newFaces.push_back(newF2);
 		}
-		if (nVerts == 6) {
+		if (nVerts == 6)
+		{
 			while (find(EVs.begin(), EVs.end(), current->start) == EVs.end())
 				current = current->nextEdge;
-			if (find(EVs.begin(), EVs.end(), current->nextEdge->nextEdge->nextEdge->start) != EVs.end()) {
-				HalfEdge* HEnext = new HalfEdge();
-				HalfEdge* HEpair = new HalfEdge();
+
+			if (find(EVs.begin(), EVs.end(), current->nextEdge->nextEdge->nextEdge->start) != EVs.end())
+			{
 				HalfEdge* HE1 = current->nextEdge;
 				HalfEdge* HE2 = HE1->nextEdge;
 				HalfEdge* HE3 = HE2->nextEdge;
 				HalfEdge* HE4 = HE3->nextEdge;
 				HalfEdge* HE5 = HE4->nextEdge;
+
 				Face* newF = new Face();
+				HalfEdge* HEnext = new HalfEdge();
+				HalfEdge* HEpair = new HalfEdge();
+
+				HEnext->start = HE3->start;
+				HEnext->nextEdge = current;
+				HEnext->pairEdge = HEpair;
+				HEnext->f = f;
+
+				HEpair->start = current->start;
+				HEpair->nextEdge = HE3;
+				HEpair->pairEdge = HEnext;
+				HEpair->f = newF;
 
 				HE2->nextEdge = HEnext;
-				HEnext->nextEdge = current;
-				HEnext->f = f;
-				HEnext->start = HE3->start;
-				f->e = HEnext;
 				HE5->nextEdge = HEpair;
-				HEpair->nextEdge = HE3;
+
 				HE5->f = newF;
 				HE4->f = newF;
 				HE3->f = newF;
-				HEpair->f = newF;
-				HEpair->start = current->start;
+
 				newF->e = HEpair;
 				newF->id = mesh->idCounter;
-				HEpair->pairEdge = HEnext;
-				HEnext->pairEdge = HEpair;
+
+				f->e = HEnext;
 
 				mesh->idCounter++;
 				newFaces.push_back(newF);
 			}
-			else {
+			else
+			{
 				HalfEdge* HE1next = new HalfEdge();
 				HalfEdge* HE1pair = new HalfEdge();
 				HalfEdge* HE2next = new HalfEdge();
@@ -1298,10 +1326,105 @@ void Geometry::subdivideFaces(Mesh * mesh, std::vector<int> *pickedIDs)
 			newFaces.push_back(newF4);
 			FVs.push_back(vc);
 		}
+		if (nVerts == 8)
+		{
+			while (find(EVs.begin(), EVs.end(), current->start) == EVs.end())
+				current = current->nextEdge;
+
+			HalfEdge* HE1 = current->nextEdge;
+			HalfEdge* HE2 = HE1->nextEdge;
+			HalfEdge* HE3 = HE2->nextEdge;
+			HalfEdge* HE4 = HE3->nextEdge;
+			HalfEdge* HE5 = HE4->nextEdge;
+			HalfEdge* HE6 = HE5->nextEdge;
+			HalfEdge* HE7 = HE6->nextEdge;
+
+			HalfEdge* HE1next = new HalfEdge();
+			HalfEdge* HE2next = new HalfEdge();
+			HalfEdge* HE3next = new HalfEdge();
+			HalfEdge* HE4next = new HalfEdge();
+
+			HalfEdge* HE1pair = new HalfEdge();
+			HalfEdge* HE2pair = new HalfEdge();
+			HalfEdge* HE3pair = new HalfEdge();
+			HalfEdge* HE4pair = new HalfEdge();
+
+			Face* newFace1 = new Face();
+			Face* newFace2 = new Face();
+			Face* newFace3 = new Face();
+
+			HE1next->start = HE2->start;
+			HE1next->nextEdge = HE4pair;
+			HE1next->pairEdge = HE1pair;
+			HE1next->f = f;
+
+			HE2next->start = HE4->start;
+			HE2next->nextEdge = HE1pair;
+			HE2next->pairEdge = HE2pair;
+			HE2next->f = newFace1;
+
+			HE3next->start = HE6->start;
+			HE3next->nextEdge = HE2pair;
+			HE3next->pairEdge = HE3pair;
+			HE3next->f = newFace2;
+
+			HE4next->start = current->start;
+			HE4next->nextEdge = HE3pair;
+			HE4next->pairEdge = HE4pair;
+			HE4next->f = newFace3;
+
+			//pairs
+			HE1pair->start = f->center;
+			HE1pair->nextEdge = HE2;
+			HE1pair->pairEdge = HE1next;
+			HE1pair->f = newFace1;
+
+			HE2pair->start = f->center;
+			HE2pair->nextEdge = HE4;
+			HE2pair->pairEdge = HE2next;
+			HE2pair->f = newFace2;
+
+			HE3pair->start = f->center;
+			HE3pair->nextEdge = HE6;
+			HE3pair->pairEdge = HE3next;
+			HE3pair->f = newFace3;
+
+			HE4pair->start = f->center;
+			HE4pair->nextEdge = current;
+			HE4pair->pairEdge = HE4next;
+			HE4pair->f = f;
+
+			HE1->nextEdge = HE1next;
+			HE3->nextEdge = HE2next;
+			HE5->nextEdge = HE3next;
+			HE7->nextEdge = HE4next;
+
+			HE2->f = newFace1;
+			HE3->f = newFace1;
+			HE4->f = newFace2;
+			HE5->f = newFace2;
+			HE6->f = newFace3;
+			HE7->f = newFace3;
+
+			newFace1->e = HE2;
+			newFace2->e = HE4;
+			newFace3->e = HE6;
+
+			newFace1->id = mesh->idCounter;
+			mesh->idCounter++;
+			newFace2->id = mesh->idCounter;
+			mesh->idCounter++;
+			newFace3->id = mesh->idCounter;
+			mesh->idCounter++;
+
+			newFaces.push_back(newFace1);
+			newFaces.push_back(newFace2);
+			newFaces.push_back(newFace3);
+
+			f->e = current;
+			f->center->e = HE1pair;
+		}
 	}
-
-
-
 
 	// add the new vertices to the lsit of vertices
 	for (Vertex* v0 : FVs)
@@ -1310,10 +1433,8 @@ void Geometry::subdivideFaces(Mesh * mesh, std::vector<int> *pickedIDs)
 		mesh->vertices.push_back(v0);
 	for (Face* f0 : newFaces) {
 		mesh->faces.push_back(f0);
-//		std::cout << f0->id << std::endl;
 	}
 
-	// std::cout << mesh->faces.size() << std::endl;
 	//Creates a lsit of new vertices per face
 	for (Face* f : mesh->faces)
 	{
@@ -1329,7 +1450,6 @@ void Geometry::subdivideFaces(Mesh * mesh, std::vector<int> *pickedIDs)
 		} while (current!= f->e);
 		v0->v = v0->v/nEdges;
 
-//		v0->v = (current->start->v + current->nextEdge->nextEdge->start->v)/2.0f;
 		// FVs.push_back(v0);
 		f->center = v0;
 	}
