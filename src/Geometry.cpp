@@ -775,106 +775,193 @@ void Geometry::subdivideFaces(Mesh * mesh, std::vector<int> *pickedIDs)
 	// now we add edges and faces so every face now has 4 faces
 	for (Face* f:selectedFaces)
 	{
+		int nEdges = 0;
 		HalfEdge* current = f->e;
+		do
+		{
+			current = current->nextEdge;
+			nEdges++;
+		} while(current != f->e);
+
+		current = f->e;
 		while (find(EVs.begin(), EVs.end(), current->start) == EVs.end())
 			current = current->nextEdge;
 
-		HalfEdge* HE1 = current->nextEdge;
-		HalfEdge* HE2 = HE1->nextEdge;
-		HalfEdge* HE3 = HE2->nextEdge;
-		HalfEdge* HE4 = HE3->nextEdge;
-		HalfEdge* HE5 = HE4->nextEdge;
-		HalfEdge* HE6 = HE5->nextEdge;
-		HalfEdge* HE7 = HE6->nextEdge;
+		if (nEdges == 8)
+		{
+			HalfEdge* HE1 = current->nextEdge;
+			HalfEdge* HE2 = HE1->nextEdge;
+			HalfEdge* HE3 = HE2->nextEdge;
+			HalfEdge* HE4 = HE3->nextEdge;
+			HalfEdge* HE5 = HE4->nextEdge;
+			HalfEdge* HE6 = HE5->nextEdge;
+			HalfEdge* HE7 = HE6->nextEdge;
 
-		HalfEdge* HE1next = new HalfEdge();
-		HalfEdge* HE2next = new HalfEdge();
-		HalfEdge* HE3next = new HalfEdge();
-		HalfEdge* HE4next = new HalfEdge();
+			HalfEdge* HE1next = new HalfEdge();
+			HalfEdge* HE2next = new HalfEdge();
+			HalfEdge* HE3next = new HalfEdge();
+			HalfEdge* HE4next = new HalfEdge();
 
-		HalfEdge* HE1pair = new HalfEdge();
-		HalfEdge* HE2pair = new HalfEdge();
-		HalfEdge* HE3pair = new HalfEdge();
-		HalfEdge* HE4pair = new HalfEdge();
+			HalfEdge* HE1pair = new HalfEdge();
+			HalfEdge* HE2pair = new HalfEdge();
+			HalfEdge* HE3pair = new HalfEdge();
+			HalfEdge* HE4pair = new HalfEdge();
 
-		Face* newFace1 = new Face();
-		Face* newFace2 = new Face();
-		Face* newFace3 = new Face();
+			Face* newFace1 = new Face();
+			Face* newFace2 = new Face();
+			Face* newFace3 = new Face();
 
-		HE1next->start = HE2->start;
-		HE1next->nextEdge = HE4pair;
-		HE1next->pairEdge = HE1pair;
-		HE1next->f = f;
+			HE1next->start = HE2->start;
+			HE1next->nextEdge = HE4pair;
+			HE1next->pairEdge = HE1pair;
+			HE1next->f = f;
 
-		HE2next->start = HE4->start;
-		HE2next->nextEdge = HE1pair;
-		HE2next->pairEdge = HE2pair;
-		HE2next->f = newFace1;
+			HE2next->start = HE4->start;
+			HE2next->nextEdge = HE1pair;
+			HE2next->pairEdge = HE2pair;
+			HE2next->f = newFace1;
 
-		HE3next->start = HE6->start;
-		HE3next->nextEdge = HE2pair;
-		HE3next->pairEdge = HE3pair;
-		HE3next->f = newFace2;
+			HE3next->start = HE6->start;
+			HE3next->nextEdge = HE2pair;
+			HE3next->pairEdge = HE3pair;
+			HE3next->f = newFace2;
 
-		HE4next->start = current->start;
-		HE4next->nextEdge = HE3pair;
-		HE4next->pairEdge = HE4pair;
-		HE4next->f = newFace3;
+			HE4next->start = current->start;
+			HE4next->nextEdge = HE3pair;
+			HE4next->pairEdge = HE4pair;
+			HE4next->f = newFace3;
 
-		//pairs
-		HE1pair->start = f->center;
-		HE1pair->nextEdge = HE2;
-		HE1pair->pairEdge = HE1next;
-		HE1pair->f = newFace1;
+			//pairs
+			HE1pair->start = f->center;
+			HE1pair->nextEdge = HE2;
+			HE1pair->pairEdge = HE1next;
+			HE1pair->f = newFace1;
 
-		HE2pair->start = f->center;
-		HE2pair->nextEdge = HE4;
-		HE2pair->pairEdge = HE2next;
-		HE2pair->f = newFace2;
+			HE2pair->start = f->center;
+			HE2pair->nextEdge = HE4;
+			HE2pair->pairEdge = HE2next;
+			HE2pair->f = newFace2;
 
-		HE3pair->start = f->center;
-		HE3pair->nextEdge = HE6;
-		HE3pair->pairEdge = HE3next;
-		HE3pair->f = newFace3;
+			HE3pair->start = f->center;
+			HE3pair->nextEdge = HE6;
+			HE3pair->pairEdge = HE3next;
+			HE3pair->f = newFace3;
 
-		HE4pair->start = f->center;
-		HE4pair->nextEdge = current;
-		HE4pair->pairEdge = HE4next;
-		HE4pair->f = f;
+			HE4pair->start = f->center;
+			HE4pair->nextEdge = current;
+			HE4pair->pairEdge = HE4next;
+			HE4pair->f = f;
 
-		HE1->nextEdge = HE1next;
-		HE3->nextEdge = HE2next;
-		HE5->nextEdge = HE3next;
-		HE7->nextEdge = HE4next;
+			HE1->nextEdge = HE1next;
+			HE3->nextEdge = HE2next;
+			HE5->nextEdge = HE3next;
+			HE7->nextEdge = HE4next;
 
-		HE2->f = newFace1;
-		HE3->f = newFace1;
-		HE4->f = newFace2;
-		HE5->f = newFace2;
-		HE6->f = newFace3;
-		HE7->f = newFace3;
+			HE2->f = newFace1;
+			HE3->f = newFace1;
+			HE4->f = newFace2;
+			HE5->f = newFace2;
+			HE6->f = newFace3;
+			HE7->f = newFace3;
 
-		newFace1->e = HE2;
-		newFace2->e = HE4;
-		newFace3->e = HE6;
+			newFace1->e = HE2;
+			newFace2->e = HE4;
+			newFace3->e = HE6;
 
-		newFace1->id = mesh->idCounter;
-		mesh->idCounter++;
-		newFace2->id = mesh->idCounter;
-		mesh->idCounter++;
-		newFace3->id = mesh->idCounter;
-		mesh->idCounter++;
+			newFace1->id = mesh->idCounter;
+			mesh->idCounter++;
+			newFace2->id = mesh->idCounter;
+			mesh->idCounter++;
+			newFace3->id = mesh->idCounter;
+			mesh->idCounter++;
 
-		pickedIDs->push_back(newFace1->id);
-		pickedIDs->push_back(newFace2->id);
-		pickedIDs->push_back(newFace3->id);
+			pickedIDs->push_back(newFace1->id);
+			pickedIDs->push_back(newFace2->id);
+			pickedIDs->push_back(newFace3->id);
 
-		newFaces.push_back(newFace1);
-		newFaces.push_back(newFace2);
-		newFaces.push_back(newFace3);
+			newFaces.push_back(newFace1);
+			newFaces.push_back(newFace2);
+			newFaces.push_back(newFace3);
 
-		f->e = current;
-		f->center->e = HE1pair;
+			f->e = current;
+			f->center->e = HE1pair;
+		}
+		else
+		{
+			HalfEdge* HE1 = current->nextEdge;
+			HalfEdge* HE2 = HE1->nextEdge;
+			HalfEdge* HE3 = HE2->nextEdge;
+			HalfEdge* HE4 = HE3->nextEdge;
+			HalfEdge* HE5 = HE4->nextEdge;
+
+			HalfEdge* HE1next = new HalfEdge();
+			HalfEdge* HE2next = new HalfEdge();
+			HalfEdge* HE3next = new HalfEdge();
+
+			HalfEdge* HE1pair = new HalfEdge();
+			HalfEdge* HE2pair = new HalfEdge();
+			HalfEdge* HE3pair = new HalfEdge();
+
+			Face* newFace1 = new Face();
+			Face* newFace2 = new Face();
+
+			HE1next->start = HE2->start;
+			HE1next->nextEdge = HE3pair;
+			HE1next->pairEdge = HE1pair;
+			HE1next->f = f;
+
+			HE2next->start = HE4->start;
+			HE2next->nextEdge = HE1pair;
+			HE2next->pairEdge = HE2pair;
+			HE2next->f = newFace1;
+
+			HE3next->start = current->start;
+			HE3next->nextEdge = HE2pair;
+			HE3next->pairEdge = HE3pair;
+			HE3next->f = newFace2;
+
+			//pairs
+			HE1pair->start = f->center;
+			HE1pair->nextEdge = HE2;
+			HE1pair->pairEdge = HE1next;
+			HE1pair->f = newFace1;
+
+			HE2pair->start = f->center;
+			HE2pair->nextEdge = HE4;
+			HE2pair->pairEdge = HE2next;
+			HE2pair->f = newFace2;
+
+			HE3pair->start = f->center;
+			HE3pair->nextEdge = current;
+			HE3pair->pairEdge = HE3next;
+			HE3pair->f = f;
+
+			HE1->nextEdge = HE1next;
+			HE3->nextEdge = HE2next;
+			HE5->nextEdge = HE3next;
+
+			HE2->f = newFace1;
+			HE3->f = newFace1;
+			HE4->f = newFace2;
+			HE5->f = newFace2;
+
+			newFace1->e = HE2;
+			newFace2->e = HE4;
+
+			newFace1->id = mesh->idCounter;
+			mesh->idCounter++;
+			newFace2->id = mesh->idCounter;
+			mesh->idCounter++;
+
+			pickedIDs->push_back(newFace1->id);
+			pickedIDs->push_back(newFace2->id);
+
+			newFaces.push_back(newFace1);
+			newFaces.push_back(newFace2);
+
+			f->e = current;
+			f->center->e = HE1pair;
+		}
 	}
 
 	std::cout << "FACES COMPLETE" << std::endl;
@@ -945,16 +1032,6 @@ void Geometry::subdivideFaces(Mesh * mesh, std::vector<int> *pickedIDs)
 
 			mesh->idCounter++;
 			newFaces.push_back(newF);
-
-			std::cout << current->start->v.x << "," << current->start->v.y << "," << current->start->v.z << std::endl;
-			std::cout << HE1->start->v.x << "," << HE1->start->v.y << "," << HE1->start->v.z << std::endl;
-			std::cout << HE2->start->v.x << "," << HE2->start->v.y << "," << HE2->start->v.z << std::endl;
-			std::cout << "-------------------------" << std::endl;
-			std::cout << current->start->v.x << "," << current->start->v.y << "," << current->start->v.z << std::endl;
-			std::cout << HE2->start->v.x << "," << HE2->start->v.y << "," << HE2->start->v.z << std::endl;
-			std::cout << HE3->start->v.x << "," << HE3->start->v.y << "," << HE3->start->v.z << std::endl;
-			std::cout << "\n\n\n";
-
 		}
 		if (nVerts == 5)
 		{
