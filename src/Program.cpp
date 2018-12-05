@@ -38,7 +38,7 @@ void Program::setupWindow()
 //	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_SAMPLES, 16);
-	glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_FALSE);
+//	glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_FALSE);
 
 	window = glfwCreateWindow(1024, 1024, "Subdivision Surfaces", NULL, NULL);
 	glfwMakeContextCurrent(window);
@@ -99,7 +99,7 @@ void Program::mainLoop()
 //	std::vector<std::vector<std::pair<int,int>>> faces;
 
 	bool res = loadOBJ("src/cube.obj", vertices, vnormals, faces, fnormals);
-	// bool res = loadOBJ("src/pyramid.obj", vertices, vnormals, faces, fnormals);
+//	bool res = loadOBJ("src/pyramid.obj", vertices, vnormals, faces, fnormals);
 //	bool res = loadOBJ("src/male_head.obj", vertices, vnormals, faces, fnormals);
 //	bool res = loadOBJ("src/uh60.obj", vertices, vnormals, faces, fnormals);
 
