@@ -30,7 +30,7 @@ void Geometry::clearGeometry() {
 	colours2.clear();
 	selected.clear();
 	selected0.clear();
-	modelMatrix = glm::mat4(1.f);
+//	modelMatrix = glm::mat4(1.f);
 }
 
 /*void Geometry::makeFace(glm::vec3 p0, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3) {
@@ -659,15 +659,30 @@ void Geometry::subdivideMesh(Mesh * mesh)
 	// changes values of vertices (excluding new EVs and FVs)
 	// std::cout << mesh->vertices.size() << std::endl;
 	for (Vertex* v0 : mesh->vertices) {
-		float nADJ = 1.0f;
+		float nADJ = 0.0f;
+		glm::vec3 ve = glm::vec3(0.0f);
+		glm::vec3 vf = glm::vec3(0.0f);
 		HalfEdge* current = v0->e; // MIGHT NOT HAVE ASSIGNED THIS IN PROGRAM.CPP AFTER OBJLOADING
 		do {
 			// v0->v += FVs[current->f->id]->v;
+//			v0->v += current->pairEdge->start->v;
+//			v0->v += current->nextEdge->nextEdge->start->v;
+//			v0->v += current->pairEdge->start->v;
+			ve+=current->pairEdge->start->v;
+			vf+=current->nextEdge->nextEdge->start->v;
+			current = current->pairEdge->nextEdge;
+			nADJ++;
+		} while (current != v0->e);
+		v0->v = (nADJ-2)*v0->v/nADJ+ve/(nADJ*nADJ)+vf/(nADJ*nADJ);
+/*		do {
+			// v0->v += FVs[current->f->id]->v;
+//			v0->v += current->pairEdge->start->v;
+			v0->v += current->nextEdge->nextEdge->start->v;
 			v0->v += current->pairEdge->start->v;
 			current = current->pairEdge->nextEdge;
-			nADJ+=1;
-		} while (current != v0->e);
-		v0->v = v0->v/nADJ;
+			nADJ+=2;
+		} while (current != v0->e);*/
+//		v0->v = v0->v/nADJ;
 	}
 
 
