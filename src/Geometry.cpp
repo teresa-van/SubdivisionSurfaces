@@ -1042,44 +1042,46 @@ void Geometry::subdivideFaces(Mesh * mesh, std::vector<int> *pickedIDs)
 				Face* newF2 = new Face();
 				Vertex* vc = new Vertex();
 				vc = f->center;
-				vc->e = HE1->pairEdge;
 				
-				HE1next->start = HE4->start;
-				HE2next->start = current->start;
-				HE3next->start = HE2->start;
-				HE1pair->start = f->center;
-				HE2pair->start = f->center;
-				HE3pair->start = f->center;
+				HE1next->start = HE2->start;
+				HE2next->start = HE4->start;
+				HE3next->start = current->start;
+				HE1pair->start = vc;
+				HE2pair->start = vc;
+				HE3pair->start = vc;
 				
 				HE1next->nextEdge = HE3pair;
 				HE2next->nextEdge = HE1pair;
 				HE3next->nextEdge = HE2pair;
-				HE1pair->nextEdge = HE4;
-				HE2pair->nextEdge = current;
-				HE3pair->nextEdge = HE2;
+				HE1pair->nextEdge = HE2;
+				HE2pair->nextEdge = HE4;
+				HE3pair->nextEdge = current;
 				
-				HE3->nextEdge = HE1next;
-				HE1->nextEdge = HE3next;
-				current->nextEdge = HE2next;
+				HE1->nextEdge = HE1next;
+				HE3->nextEdge = HE2next;
+				HE5->nextEdge = HE3next;
 				
-				HE3next->f = f;
-				HE2pair->f = f;
-				f->e = HE2next; //HE3
-				HE1next->f = newF1;
-				HE3pair->f = newF1;
+				HE1next->f = f;
+				HE3pair->f = f;
+				f->e = current;
+				
+				HE2next->f = newF1;
+				HE1pair->f = newF1;
 				HE2->f = newF1;
 				HE3->f = newF1;
-				newF1->e = HE1next;
-				HE2next->f = newF2;
-				HE1pair->f = newF2;
-				HE4->f = newF1;
-				HE5->f = newF1;
-				newF2->e = HE2next;
+				newF1->e = HE2;
+				
+				HE3next->f = newF2;
+				HE2pair->f = newF2;
+				HE4->f = newF2;
+				HE5->f = newF2;
+				newF2->e = HE4;
+				
 				newF1->id = mesh->idCounter;
 				mesh->idCounter++;
 				newF2->id = mesh->idCounter;
 				mesh->idCounter++;
-								
+				
 				HE1next->pairEdge = HE1pair;
 				HE1pair->pairEdge = HE1next;
 				HE2next->pairEdge = HE2pair;
@@ -1089,13 +1091,101 @@ void Geometry::subdivideFaces(Mesh * mesh, std::vector<int> *pickedIDs)
 				
 				newFaces.push_back(newF1);
 				newFaces.push_back(newF2);
-				
 				FVs.push_back(vc);
-//				if (find(EVs.begin(), EVs.end(), current->nextEdge->nextEdge->start) != EVs.end()) {
-//				}
-//				else {
-//				}
 
+			}
+		}
+		if (nVerts == 7) {
+			while (find(EVs.begin(), EVs.end(), current->start) == EVs.end())
+				current = current->nextEdge;
+			HalfEdge* HE1next = new HalfEdge();
+			HalfEdge* HE1pair = new HalfEdge();
+			HalfEdge* HE2next = new HalfEdge();
+			HalfEdge* HE2pair = new HalfEdge();
+			HalfEdge* HE3next = new HalfEdge();
+			HalfEdge* HE3pair = new HalfEdge();
+			HalfEdge* HE4next = new HalfEdge();
+			HalfEdge* HE4pair = new HalfEdge();
+			HalfEdge* HE5next = new HalfEdge();
+			HalfEdge* HE5pair = new HalfEdge();
+			HalfEdge* HE1 = current->nextEdge;
+			HalfEdge* HE2 = HE1->nextEdge;
+			HalfEdge* HE3 = HE2->nextEdge;
+			HalfEdge* HE4 = HE3->nextEdge;
+			HalfEdge* HE5 = HE4->nextEdge;
+			HalfEdge* HE6 = HE5->nextEdge;
+			Face* newF1 = new Face();
+			Face* newF2 = new Face();
+			Face* newF3 = new Face();
+			Face* newF4 = new Face();
+			Vertex* vc = new Vertex();
+			vc = f->center;
+			
+			HE1pair->start = vc;
+			HE2pair->start = vc;
+			HE3pair->start = vc;
+			HE4pair->start = vc;
+			HE5pair->start = vc;
+			
+			HE1next->pairEdge = HE1pair;
+			HE1pair->pairEdge = HE1next;
+			HE2next->pairEdge = HE2pair;
+			HE2pair->pairEdge = HE2next;
+			HE3next->pairEdge = HE3pair;
+			HE3pair->pairEdge = HE3next;
+			HE4next->pairEdge = HE4pair;
+			HE4pair->pairEdge = HE4next;
+			HE5next->pairEdge = HE5pair;
+			HE5pair->pairEdge = HE5next;
+				
+			HE1next->nextEdge = HE5pair;
+			HE2next->nextEdge = HE1pair;
+			HE3next->nextEdge = HE2pair;
+			HE4next->nextEdge = HE3pair;
+			HE5next->nextEdge = HE4pair;
+			
+			if (find(EVs.begin(), EVs.end(), current->nextEdge->nextEdge->start) != EVs.end() ) { // current is a small square
+				if (find(EVs.begin(), EVs.end(), current->nextEdge->nextEdge->nextEdge->nextEdge->start) != EVs.end() ) { //next is other small square
+					HE1next->start = HE2->start;
+					HE2next->start = HE4->start;
+					HE3next->start = HE5->start;
+					HE4next->start = HE6->start;
+					HE5next->start = current->start;
+					
+					HE1->nextEdge = HE1next;
+					HE3->nextEdge = HE2next;
+					HE4->nextEdge = HE3next;
+					HE5->nextEdge = HE4next;
+					HE6->nextEdge = HE5next;
+
+					
+				}
+				else{ //next is big rectangle
+					HE1next->start = HE2->start;
+					HE2next->start = HE3->start;
+					HE3next->start = HE4->start;
+					HE4next->start = HE5->start;
+					HE5next->start = current->start;
+
+					HE1->nextEdge = HE1next;
+					HE2->nextEdge = HE2next;
+					HE3->nextEdge = HE3next;
+					HE4->nextEdge = HE4next;
+					HE6->nextEdge = HE5next;
+				}
+			}
+			else { //current is big rectangle
+				HE1next->start = HE1->start;
+				HE2next->start = HE2->start;
+				HE3next->start = HE3->start;
+				HE4next->start = HE5->start;
+				HE5next->start = current->start;
+
+				HE1->nextEdge = HE2next;
+				HE2->nextEdge = HE3next;
+				HE4->nextEdge = HE4next;
+				HE6->nextEdge = HE5next;
+				current->nextEdge = HE1next;
 			}
 		}
 	}
