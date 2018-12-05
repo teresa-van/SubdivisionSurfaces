@@ -727,7 +727,7 @@ void Geometry::subdivideFaces(Mesh * mesh, std::vector<int> *pickedIDs)
 			if (find(unselectedAdjFaces.begin(), unselectedAdjFaces.end(), current->pairEdge->f) == unselectedAdjFaces.end()
 					&& find(selectedFaces.begin(), selectedFaces.end(), current->pairEdge->f) == selectedFaces.end())
 					unselectedAdjFaces.push_back(current->pairEdge->f);
-					
+
 			if (find(EVs.begin(), EVs.end(), current->nextEdge->start) != EVs.end())
 			{
 				current = current->nextEdge->nextEdge;
@@ -786,7 +786,7 @@ void Geometry::subdivideFaces(Mesh * mesh, std::vector<int> *pickedIDs)
 				//T-JUNCTIONS GO HERE I THINK
 				//T-JUNCTIONS GO HERE I THINK
 				//T-JUNCTIONS GO HERE I THINK
-				
+
 
 
 				// current = HEnext->nextEdge;
@@ -927,10 +927,10 @@ void Geometry::subdivideFaces(Mesh * mesh, std::vector<int> *pickedIDs)
 			newF->id = mesh->idCounter;
 			HEpair->pairEdge = HEnext;
 			HEnext->pairEdge = HEpair;
-			
+
 			mesh->idCounter++;
 			newFaces.push_back(newF);
-			
+
 			std::cout << current->start->v.x << "," << current->start->v.y << "," << current->start->v.z << std::endl;
 			std::cout << HE1->start->v.x << "," << HE1->start->v.y << "," << HE1->start->v.z << std::endl;
 			std::cout << HE2->start->v.x << "," << HE2->start->v.y << "," << HE2->start->v.z << std::endl;
@@ -938,13 +938,13 @@ void Geometry::subdivideFaces(Mesh * mesh, std::vector<int> *pickedIDs)
 			std::cout << current->start->v.x << "," << current->start->v.y << "," << current->start->v.z << std::endl;
 			std::cout << HE2->start->v.x << "," << HE2->start->v.y << "," << HE2->start->v.z << std::endl;
 			std::cout << HE3->start->v.x << "," << HE3->start->v.y << "," << HE3->start->v.z << std::endl;
-			std::cout << "\n\n\n"; 
-			
+			std::cout << "\n\n\n";
+
 		}
 		if (nVerts == 5) {
 			while (find(EVs.begin(), EVs.end(), current->start) == EVs.end())
 				current = current->nextEdge;
-			
+
 			HalfEdge* HE1next = new HalfEdge();
 			HalfEdge* HE1pair = new HalfEdge();
 			HalfEdge* HE2next = new HalfEdge();
@@ -962,7 +962,7 @@ void Geometry::subdivideFaces(Mesh * mesh, std::vector<int> *pickedIDs)
 			newF1->e = HE1next;
 			newF1->id = mesh->idCounter;
 			mesh->idCounter++;
-			
+
 			HE4->nextEdge = HE2next;
 			HE2next->nextEdge = HE3;
 			HE2next->start = current->start;
@@ -970,12 +970,12 @@ void Geometry::subdivideFaces(Mesh * mesh, std::vector<int> *pickedIDs)
 			newF2->e = HE2next;
 			newF2->id = mesh->idCounter;
 			mesh->idCounter++;
-			
+
 			HE1next->pairEdge = HE1pair;
 			HE1pair->pairEdge = HE1next;
 			HE2next->pairEdge = HE2pair;
 			HE2pair->pairEdge = HE2next;
-			
+
 			HE1next->f = newF1;
 			current->f = newF1;
 			HE1->f = newF1;
@@ -984,12 +984,12 @@ void Geometry::subdivideFaces(Mesh * mesh, std::vector<int> *pickedIDs)
 			HE4->f = newF2;
 			HE2next->f = newF2;
 			HE2pair->f = f;
-			
+
 			HE2pair->nextEdge = HE1pair;
 			HE1pair->nextEdge = HE2;
 			HE2->nextEdge = HE2pair;//nextEdge
 			f->e = HE2;
-			
+
 			newFaces.push_back(newF1);
 			newFaces.push_back(newF2);
 		}
@@ -1005,7 +1005,7 @@ void Geometry::subdivideFaces(Mesh * mesh, std::vector<int> *pickedIDs)
 				HalfEdge* HE4 = HE3->nextEdge;
 				HalfEdge* HE5 = HE4->nextEdge;
 				Face* newF = new Face();
-				
+
 				HE2->nextEdge = HEnext;
 				HEnext->nextEdge = current;
 				HEnext->f = f;
@@ -1022,7 +1022,7 @@ void Geometry::subdivideFaces(Mesh * mesh, std::vector<int> *pickedIDs)
 				newF->id = mesh->idCounter;
 				HEpair->pairEdge = HEnext;
 				HEnext->pairEdge = HEpair;
-				
+
 				mesh->idCounter++;
 				newFaces.push_back(newF);
 			}
@@ -1043,53 +1043,53 @@ void Geometry::subdivideFaces(Mesh * mesh, std::vector<int> *pickedIDs)
 				Vertex* vc = new Vertex();
 				vc = f->center;
 				vc->e = HE1pair;
-				
+
 				HE1next->start = HE2->start;
 				HE2next->start = HE4->start;
 				HE3next->start = current->start;
 				HE1pair->start = vc;
 				HE2pair->start = vc;
 				HE3pair->start = vc;
-				
+
 				HE1next->nextEdge = HE3pair;
 				HE2next->nextEdge = HE1pair;
 				HE3next->nextEdge = HE2pair;
 				HE1pair->nextEdge = HE2;
 				HE2pair->nextEdge = HE4;
 				HE3pair->nextEdge = current;
-				
+
 				HE1->nextEdge = HE1next;
 				HE3->nextEdge = HE2next;
 				HE5->nextEdge = HE3next;
-				
+
 				HE1next->f = f;
 				HE3pair->f = f;
 				f->e = current;
-				
+
 				HE2next->f = newF1;
 				HE1pair->f = newF1;
 				HE2->f = newF1;
 				HE3->f = newF1;
 				newF1->e = HE2;
-				
+
 				HE3next->f = newF2;
 				HE2pair->f = newF2;
 				HE4->f = newF2;
 				HE5->f = newF2;
 				newF2->e = HE4;
-				
+
 				newF1->id = mesh->idCounter;
 				mesh->idCounter++;
 				newF2->id = mesh->idCounter;
 				mesh->idCounter++;
-				
+
 				HE1next->pairEdge = HE1pair;
 				HE1pair->pairEdge = HE1next;
 				HE2next->pairEdge = HE2pair;
 				HE2pair->pairEdge = HE2next;
 				HE3next->pairEdge = HE3pair;
 				HE3pair->pairEdge = HE3next;
-				
+
 				newFaces.push_back(newF1);
 				newFaces.push_back(newF2);
 				FVs.push_back(vc);
@@ -1099,6 +1099,7 @@ void Geometry::subdivideFaces(Mesh * mesh, std::vector<int> *pickedIDs)
 		if (nVerts == 7) {
 			while (find(EVs.begin(), EVs.end(), current->start) == EVs.end())
 				current = current->nextEdge;
+
 			HalfEdge* HE1next = new HalfEdge();
 			HalfEdge* HE1pair = new HalfEdge();
 			HalfEdge* HE2next = new HalfEdge();
@@ -1122,13 +1123,13 @@ void Geometry::subdivideFaces(Mesh * mesh, std::vector<int> *pickedIDs)
 			Vertex* vc = new Vertex();
 			vc = f->center;
 			vc->e - HE1pair;
-			
+
 			HE1pair->start = vc;
 			HE2pair->start = vc;
 			HE3pair->start = vc;
 			HE4pair->start = vc;
 			HE5pair->start = vc;
-			
+
 			HE1next->pairEdge = HE1pair;
 			HE1pair->pairEdge = HE1next;
 			HE2next->pairEdge = HE2pair;
@@ -1139,13 +1140,13 @@ void Geometry::subdivideFaces(Mesh * mesh, std::vector<int> *pickedIDs)
 			HE4pair->pairEdge = HE4next;
 			HE5next->pairEdge = HE5pair;
 			HE5pair->pairEdge = HE5next;
-				
+
 			HE1next->nextEdge = HE5pair;
 			HE2next->nextEdge = HE1pair;
 			HE3next->nextEdge = HE2pair;
 			HE4next->nextEdge = HE3pair;
 			HE5next->nextEdge = HE4pair;
-			
+
 			if (find(EVs.begin(), EVs.end(), current->nextEdge->nextEdge->start) != EVs.end() ) { // current is a small square
 				if (find(EVs.begin(), EVs.end(), current->nextEdge->nextEdge->nextEdge->nextEdge->start) != EVs.end() ) { //next is other small square
 					HE1next->start = HE2->start;
@@ -1153,23 +1154,29 @@ void Geometry::subdivideFaces(Mesh * mesh, std::vector<int> *pickedIDs)
 					HE3next->start = HE5->start;
 					HE4next->start = HE6->start;
 					HE5next->start = current->start;
-					
+
 					HE1->nextEdge = HE1next;
 					HE3->nextEdge = HE2next;
 					HE4->nextEdge = HE3next;
 					HE5->nextEdge = HE4next;
 					HE6->nextEdge = HE5next;
 
+					HE1pair->nextEdge = HE2;
+					HE2pair->nextEdge = HE4;
+					HE3pair->nextEdge = HE5;
+					HE4pair->nextEdge = HE6;
+					HE5pair->nextEdge = current;
+
 					HE1next->f = f;
 					HE5pair->f = f;
 					f->e = current;
-					
+
 					HE2->f = newF1;
 					HE3->f = newF1;
 					HE2next->f = newF1;
 					HE1pair->f = newF1;
 					newF1->e = HE2;
-					
+
 					HE4->f = newF2;
 					HE3next->f = newF2;
 					HE2pair->f = newF2;
@@ -1179,12 +1186,12 @@ void Geometry::subdivideFaces(Mesh * mesh, std::vector<int> *pickedIDs)
 					HE4next->f = newF3;
 					HE3pair->f = newF3;
 					newF3->e = HE5;
-					
+
 					HE6->f = newF4;
 					HE5next->f = newF4;
 					HE4pair->f = newF4;
 					newF4->e = HE6;
-					
+
 				}
 				else{ //next is big rectangle
 					HE1next->start = HE2->start;
@@ -1198,26 +1205,32 @@ void Geometry::subdivideFaces(Mesh * mesh, std::vector<int> *pickedIDs)
 					HE3->nextEdge = HE3next;
 					HE4->nextEdge = HE4next;
 					HE6->nextEdge = HE5next;
-					
+
+					HE1pair->nextEdge = HE2;
+					HE2pair->nextEdge = HE3;
+					HE3pair->nextEdge = HE4;
+					HE4pair->nextEdge = HE5;
+					HE5pair->nextEdge = current;
+
 					HE1next->f = f;
 					HE5next->f = f;
 					f->e = current;
-					
+
 					HE2->f = newF1;
 					HE2next->f = newF1;
 					HE1pair->f = newF1;
 					newF1->e = HE2;
-					
+
 					HE3->f = newF2;
 					HE3next->f = newF2;
 					HE2pair->f = newF2;
 					newF2->e = HE3;
-					
+
 					HE4->f = newF3;
 					HE4next->f = newF3;
 					HE3pair->f = newF3;
 					newF3->e = HE4;
-					
+
 					HE5->f = newF4;
 					HE6->f = newF4;
 					HE5next->f = newF4;
@@ -1237,27 +1250,33 @@ void Geometry::subdivideFaces(Mesh * mesh, std::vector<int> *pickedIDs)
 				HE4->nextEdge = HE4next;
 				HE6->nextEdge = HE5next;
 				current->nextEdge = HE1next;
-				
+
+				HE1pair->nextEdge = HE1;
+				HE2pair->nextEdge = HE2;
+				HE3pair->nextEdge = HE3;
+				HE4pair->nextEdge = HE5;
+				HE5pair->nextEdge = current;
+
 				HE1next->f = f;
 				HE5next->f = f;
 				f->e = current;
-				
+
 				HE1->f = newF1;
 				HE2next->f = newF1;
 				HE1pair->f = newF1;
 				newF1->e = HE1;
-				
+
 				HE2->f = newF2;
 				HE3next->f = newF2;
 				HE2pair->f = newF2;
 				newF2->e = HE2;
-				
+
 				HE3->f = newF3;
 				HE4->f = newF3;
 				HE4next->f = newF3;
 				HE3pair->f = newF3;
 				newF3->e = HE3;
-				
+
 				HE5->f = newF4;
 				HE6->f = newF4;
 				HE5next->f = newF4;
@@ -1272,7 +1291,7 @@ void Geometry::subdivideFaces(Mesh * mesh, std::vector<int> *pickedIDs)
 			mesh->idCounter++;
 			newF4->id = mesh->idCounter;
 			mesh->idCounter++;
-			
+
 			newFaces.push_back(newF1);
 			newFaces.push_back(newF2);
 			newFaces.push_back(newF3);
@@ -1294,8 +1313,7 @@ void Geometry::subdivideFaces(Mesh * mesh, std::vector<int> *pickedIDs)
 //		std::cout << f0->id << std::endl;
 	}
 
-		
-	std::cout << mesh->faces.size() << std::endl;
+	// std::cout << mesh->faces.size() << std::endl;
 	//Creates a lsit of new vertices per face
 	for (Face* f : mesh->faces)
 	{
@@ -1303,16 +1321,12 @@ void Geometry::subdivideFaces(Mesh * mesh, std::vector<int> *pickedIDs)
 		HalfEdge* current = f->e;
 		v0->v = glm::vec3(0.0f);
 		float nEdges = 0.0f;
-		std::cout << "dddddd" << std::endl;
 		do
 		{
-//			std::cout << current->f->id << std::endl;
-			std::cout << "ffffff" << std::endl;
 			v0->v += current->start->v;
 			nEdges++;
 			current = current->nextEdge;
 		} while (current!= f->e);
-		std::cout << "ggggggg" << std::endl;
 		v0->v = v0->v/nEdges;
 
 //		v0->v = (current->start->v + current->nextEdge->nextEdge->start->v)/2.0f;
