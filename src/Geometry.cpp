@@ -1040,6 +1040,9 @@ void Geometry::subdivideFaces(Mesh * mesh, std::vector<int> *pickedIDs)
 				HalfEdge* HE5 = HE4->nextEdge;
 				Face* newF1 = new Face();
 				Face* newF2 = new Face();
+				Vertex* vc = new Vertex();
+				vc = f->center;
+				vc->e = HE1->pairEdge;
 				
 				HE1next->start = HE4->start;
 				HE2next->start = current->start;
@@ -1086,6 +1089,8 @@ void Geometry::subdivideFaces(Mesh * mesh, std::vector<int> *pickedIDs)
 				
 				newFaces.push_back(newF1);
 				newFaces.push_back(newF2);
+				
+				FVs.push_back(vc);
 //				if (find(EVs.begin(), EVs.end(), current->nextEdge->nextEdge->start) != EVs.end()) {
 //				}
 //				else {
