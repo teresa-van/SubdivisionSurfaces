@@ -112,7 +112,7 @@ void Program::mainLoop()
 		p->v = v;
 		vList.push_back(p);
 	}
-	std::cout << vList.size() << std::endl;
+//	std::cout << vList.size() << std::endl;
 
 	for (std::vector<int> f : faces)
 	{

@@ -495,9 +495,11 @@ void Geometry::subdivideMesh(Mesh * mesh)
 		{
 			v0->v += current->start->v;
 			nEdges++;
+			current = current->nextEdge;
 		} while (current!= f->e);
 
 		v0->v = v0->v/nEdges;
+//		v0->v = (current->start->v + current->nextEdge->nextEdge->start->v)/2.0f;
 		FVs.push_back(v0);
 
 		// std::cout << current->f->id << " <- current \n";
@@ -542,6 +544,7 @@ void Geometry::subdivideMesh(Mesh * mesh)
 			else
 			{
 				p = (current->start->v + FVs[current->f->id]->v + current->pairEdge->start->v + FVs[current->pairEdge->f->id]->v) / 4.0f;
+//				p = (current->start->v + current->nextEdge->start->v)/2.0f;
 				Vertex* v0 = new Vertex();
 				v0->v = p;
 				HalfEdge* HEnext = new HalfEdge();
@@ -601,6 +604,8 @@ void Geometry::subdivideMesh(Mesh * mesh)
 			HalfEdge* HE2 = new HalfEdge();
 			HE1->nextEdge = HE2;
 			HE2->nextEdge = prevE;
+			HE1->start = current->nextEdge->start;
+			HE2->start = FVs[current->f->id];
 		
 			if (current != f->e) {
 				HE2->pairEdge=lastE;
@@ -629,13 +634,13 @@ void Geometry::subdivideMesh(Mesh * mesh)
 				prevE->f = f;
 			}
 			
-			std::cout << current->f->id << std::endl;
+//			std::cout << current->f->id << std::endl;
 			prevE = current->nextEdge;
 			current->nextEdge = HE1;
 			current = prevE->nextEdge;
 			lastE = HE1;
 		} while (current != f->e);// && counter < nEdges);
-	std::cout << "here\n";
+//	std::cout << "here\n";
 		f->e->nextEdge->nextEdge->pairEdge = lastE;
 		lastE = f->e->nextEdge->nextEdge->pairEdge;
 	}
@@ -664,7 +669,19 @@ void Geometry::subdivideMesh(Mesh * mesh)
 	for (Face* f0 : newFaces)
 		mesh->faces.push_back(f0);
 	
-
+	
+/*	for (Face* f : mesh->faces) {
+		HalfEdge* current = f->e;
+		std::cout << f->id << std::endl;
+		std::cout << "-----------------------" << std::endl;
+		do {
+			std::cout << current->f->id << std::endl;
+			current = current->nextEdge;
+		} while (current != f->e);
+		std::cout << std::endl;
+		std::cout << std::endl;
+	}
+*/
 	this->clearGeometry();
 	this->makeModel(mesh->faces);
 }
