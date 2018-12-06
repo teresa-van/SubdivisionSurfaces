@@ -697,6 +697,7 @@ void Geometry::subdivideFaces(Mesh * mesh, std::vector<int> *pickedIDs)
 
 	std::vector<Vertex*> selectedFaceVerts;
 	std::vector<Face*> selectedFaces;
+	std::vector<Face*> ringFaces;
 	std::vector<Face*> unselectedAdjFaces;
 
 	for (Face* f : mesh->faces)
@@ -713,9 +714,21 @@ void Geometry::subdivideFaces(Mesh * mesh, std::vector<int> *pickedIDs)
 			} while (current!= f->e);
 		}
 	}
+	for (Face* f : selectedFaces) {
+		ringFaces.push_back(f);
+		HalfEdge* current = f->e;
+		do
+		{
+			if (find(ringFaces.begin(), ringFaces.end(), current->pairEdge->f) == ringFaces.end()
+					&& find(selectedFaces.begin(), selectedFaces.end(), current->pairEdge->f) == selectedFaces.end())
+					ringFaces.push_back(current->pairEdge->f);
+			current = current->nextEdge;
+		} while (current != f->e);
+	}
 
 	//Creates list of new vertices per edge
-	for (Face* f : selectedFaces)
+//	for (Face* f : selectedFaces)
+	for (Face* f : ringFaces)
 	{
 //		std::cout << "\n2. Face: " << f->id << "\n";
 		FVs.push_back(f->center);
