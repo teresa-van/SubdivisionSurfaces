@@ -68,20 +68,10 @@ public:
 	std::vector<glm::vec3> colours2;
 	glm::mat4 modelMatrix;
 
-	void makeCube(glm::vec3 pos, float w, float h, float d);
-//	void makeFace(glm::vec3 p0, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3);
-//	void makeFace(std::vector<glm::vec3> points);
-//	void makeFace(Face* f);
-	void makeMesh(std::vector<Face*> faces);
 	void makeModel(std::vector<Face*> faces);
-	void makePoint(glm::vec3 v);
-//	void makeHEdge(HalfEdge *e);
-//	void makeEdge(Vertex p0, Vertex p1);
-	void makeEdge(glm::vec3 p0, glm::vec3 p1);
 	void clearGeometry();
 
 	void highlightEdge(int eID);
-//	void unhighlightEdge(int eID);
 	void unhighlightEdge();
 	void makeFBO(std::vector<glm::vec3> screenPoints);
 

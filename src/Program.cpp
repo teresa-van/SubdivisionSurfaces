@@ -80,13 +80,11 @@ std::vector<Geometry*> InputHandler::stuff;
 Mesh * InputHandler::mesh;
 
 int InputHandler::lastID = 0;
-//int InputHandler::idCounter = 0;
 int InputHandler::pickedID = -1;
 std::vector<int> InputHandler::pickedIDs;
 bool InputHandler::multiPick = false;
 
 std::map<int, Face*> Geometry::EdgeIDs;
-//std::vector<int> InputHandler::selected;
 
 float InputHandler::elevate = 0.0f;
 
@@ -96,7 +94,6 @@ void Program::mainLoop()
 	std::vector<glm::vec3> vnormals;
 	std::vector<std::vector<int>> faces;
 	std::vector<std::vector<int>> fnormals;
-//	std::vector<std::vector<std::pair<int,int>>> faces;
 
 	bool res = loadOBJ("src/cube.obj", vertices, vnormals, faces, fnormals);
 	// bool res = loadOBJ("src/pyramid.obj", vertices, vnormals, faces, fnormals);
@@ -113,7 +110,6 @@ void Program::mainLoop()
 		p->v = v;
 		vList.push_back(p);
 	}
-//	std::cout << vList.size() << std::endl;
 
 	for (std::vector<int> f : faces)
 	{
@@ -125,11 +121,11 @@ void Program::mainLoop()
 	int faceIndex = 0;
 	for (std::vector<int> face : faces)
 	{
-		for (int i=0; i<face.size(); i++)
+		for (int i=0; i<(int)face.size(); i++)
 		{
 			int u, v;
 			u = i;
-			if (u == face.size()-1)
+			if (u == (int)face.size()-1)
 				v = 0;
 			else
 				v = u+1;
@@ -148,11 +144,11 @@ void Program::mainLoop()
 
 		Vertex* v0 = new Vertex();
 		v0->v = glm::vec3(0.0f);
-		for (int i=0; i<face.size(); i++)
+		for (int i=0; i<(int)face.size(); i++)
 		{
 			int u, v, unext, vnext;
 			u = i;
-			if (u == face.size()-1)
+			if (u == (int)face.size()-1)
 				v = 0;
 			else
 				v = u+1;
@@ -160,8 +156,8 @@ void Program::mainLoop()
 			unext = u + 1;
 			vnext = v + 1;
 
-			if (u >= face.size() - 1) unext = 0;
-			if (v >= face.size() - 1) vnext = 0;
+			if (u >= (int)face.size() - 1) unext = 0;
+			if (v >= (int)face.size() - 1) vnext = 0;
 
 			std::pair<int,int> uv = std::make_pair(face[u],face[v]);
 			std::pair<int,int> vu = std::make_pair(uv.second,uv.first);
@@ -179,23 +175,10 @@ void Program::mainLoop()
 		v0->v = v0->v / (float)face.size();
 		fList[faceIndex]->center = v0;
 
-//		fList[faceIndex]->id = InputHandler::idCounter;
 		fList[faceIndex]->id = faceIndex;
-//		Geometry::EdgeIDs[InputHandler::idCounter] = fList[InputHandler::idCounter];
 		Geometry::EdgeIDs[faceIndex] = fList[faceIndex];
-//		InputHandler::idCounter++;
 		faceIndex++;
 	}
-
-	// std::map<std::pair<int, int>, HalfEdge*>::iterator it;
-	// for ( it = Edges.begin(); it != Edges.end(); it++ )
-	// {
-	// 	std::cout << it->second->pairEdge->f->id << "\n";
-	// 	// 	std::cout << it->first.first  // string (key)
-	// 	// 						<< ','
-	// 	// 						<< it->first.second   // string's value
-	// 	// 						<< std::endl ;
-	// }
 
 	InputHandler::mesh = new Mesh();
 	for (Face * f : fList)
@@ -204,7 +187,6 @@ void Program::mainLoop()
 		InputHandler::mesh->vertices.push_back(v);
 	InputHandler::mesh->idCounter = faceIndex;
 
-//	InputHandler::lastID = InputHandler::idCounter;
 	InputHandler::lastID = faceIndex;
 	Geometry* model = new Geometry();
 	model->makeModel(fList);
@@ -214,13 +196,6 @@ void Program::mainLoop()
 	renderEngine->updateBuffers(*model);
 	InputHandler::stuff.push_back(model);
 
-/*			Geometry* mesh = new Geometry();
-	mesh->makeMesh(fList);
-	mesh->modelMatrix = glm::rotate(mesh->modelMatrix, glm::radians(180.0f), glm::vec3(0.0f,1.0f,0.0f));
-	mesh->modelMatrix = glm::rotate(mesh->modelMatrix, glm::radians(90.0f), glm::vec3(-1.0f,0.0f,0.0f));
-	renderEngine->assignBuffers(*mesh);
-	renderEngine->updateBuffers(*mesh);
-	InputHandler::stuff.push_back(mesh);*/
 	renderEngine->render(InputHandler::stuff,glm::mat4(1.f),0);
 
 	InputHandler::setUp(renderEngine);

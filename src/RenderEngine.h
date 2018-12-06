@@ -17,7 +17,6 @@ class RenderEngine {
 public:
 	RenderEngine(GLFWwindow* window);
 
-//	void render(const std::vector<Geometry*>& objects, glm::mat4 view, glm::vec3 pos, int z);
 	void render(const std::vector<Geometry*>& objects, glm::mat4 view, int z);
 	void assignBuffers(Geometry& object);
 	void updateBuffers(Geometry& object);

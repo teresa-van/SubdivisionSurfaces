@@ -47,13 +47,11 @@ public:
 	static void controller();
 	static void cameraController(glm::vec3 dPos);
 
-//	static std::vector<Geometry*
 
 	static void renderGeometries();
 	static std::vector<Geometry*> stuff;
 
 	static int lastID;
-//	static int idCounter;
 	static int pickedID;
 	static std::vector<int> pickedIDs;
 	static bool multiPick;
