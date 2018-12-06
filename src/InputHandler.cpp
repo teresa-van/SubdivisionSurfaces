@@ -72,6 +72,8 @@ void InputHandler::mouse(GLFWwindow* window, int button, int action, int mods) {
 
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
 	{
+		lefthold = true;
+
 		if (!multiPick)
 			pickedIDs.clear();
 		glFlush();
@@ -82,9 +84,7 @@ void InputHandler::mouse(GLFWwindow* window, int button, int action, int mods) {
 		glReadPixels(x, 1024-y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &data);
 		pickedID = ((data[0] + data[1]*256 + data[2]*256*256)) &0x00ffffff;
 		if (pickedID == 0x00ffffff) {
-			lefthold = true;
 			pickedID = -1;
-
 		}
 
 		else {
@@ -118,22 +118,46 @@ void InputHandler::mouse(GLFWwindow* window, int button, int action, int mods) {
 }
 
 // Callback for mouse motion
-void InputHandler::motion(GLFWwindow* window, double x, double y) {
+void InputHandler::motion(GLFWwindow* window, double x, double y)
+{
+// 	glFlush();
+// 	glFinish();
+// 	glReadBuffer(GL_COLOR_ATTACHMENT0);
+// 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+// 	unsigned char data[4];
+// 	glReadPixels(x, 1024-y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &data);
+// 	pickedID = ((data[0] + data[1]*256 + data[2]*256*256)) &0x00ffffff;
+// 	if (pickedID == 0x00ffffff) {
+// 	}
+// 	else {
+// 		if ((int)data[3] == 255) {
+// //			std::cout << "r:" << (int)data[0] << ", g:" << (int)data[1] << ", b:" << (int)data[2] << ", a:" << (int)data[3] << std::endl;
+// //			std::cout << "EdgeID : " <<pickedID << std::endl;
+// 		}
+// 	}
+	if (lefthold)
+	{
+		glFlush();
+		glFinish();
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+		unsigned char data[4];
 
-	glFlush();
-	glFinish();
-	glReadBuffer(GL_COLOR_ATTACHMENT0);
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	unsigned char data[4];
-	glReadPixels(x, 1024-y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &data);
-	pickedID = ((data[0] + data[1]*256 + data[2]*256*256)) &0x00ffffff;
-	if (pickedID == 0x00ffffff) {
-	}
-	else {
-		if ((int)data[3] == 255) {
-//			std::cout << "r:" << (int)data[0] << ", g:" << (int)data[1] << ", b:" << (int)data[2] << ", a:" << (int)data[3] << std::endl;
-//			std::cout << "EdgeID : " <<pickedID << std::endl;
+		glReadPixels(x, 1024-y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &data);
+		pickedID = ((data[0] + data[1]*256 + data[2]*256*256)) &0x00ffffff;
+		if (pickedID != 0x00ffffff) {
+			if ((int)data[3] == 255) {
+				bool exists = false;
+				for (int i=0; i<(int)pickedIDs.size(); i++) {
+					if ( pickedIDs[i] == pickedID) {
+						exists = true;
+						break;
+					}
+				}
+				if (!exists)
+					pickedIDs.push_back(pickedID);
+			}
 		}
+		renderGeometries();
 	}
 
 	glm::vec2 newPos = glm::vec2(x/256, -y/256)*2.f - glm::vec2(1.f);
