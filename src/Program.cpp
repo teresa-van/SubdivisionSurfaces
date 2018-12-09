@@ -33,12 +33,12 @@ void Program::setupWindow()
 		exit(EXIT_FAILURE);
 
 
-	//glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	//glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 //	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-	//glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_SAMPLES, 16);
-	//glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_FALSE);
+	glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_FALSE);
 
 	window = glfwCreateWindow(1024, 1024, "Subdivision Surfaces", NULL, NULL);
 	glfwMakeContextCurrent(window);
@@ -90,8 +90,8 @@ float InputHandler::elevate = 0.0f;
 
 void Program::mainLoop()
 {
-	
-	
+
+
 	std::vector<glm::vec3> vertices;
 	std::vector<glm::vec3> vnormals;
 	std::vector<std::vector<int>> faces;
