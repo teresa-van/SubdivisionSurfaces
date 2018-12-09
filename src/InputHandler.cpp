@@ -7,12 +7,6 @@ int InputHandler::mouseOldY;
 // Must be called before processing any GLFW events
 void InputHandler::setUp(RenderEngine* renderEngine) {
 	InputHandler::renderEngine = renderEngine;
-//	Geometry cube;
-//	cube.makeCube(glm::vec3(0.0f), .5f, .5f, .5f);
-//	renderEngine->assignBuffers(cube);
-//	renderEngine->updateBuffers(cube);
-//	stuff.push_back(&cube);
-//	rotAxis.makeLine(r0, r1);
 	cameraController(glm::vec3(0.0f, 0.0f, 0.0f));
 	renderGeometries();
 
@@ -186,21 +180,7 @@ void InputHandler::mouse(GLFWwindow* window, int button, int action, int mods) {
 // Callback for mouse motion
 void InputHandler::motion(GLFWwindow* window, double x, double y)
 {
-// 	glFlush();
-// 	glFinish();
-// 	glReadBuffer(GL_COLOR_ATTACHMENT0);
-// 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-// 	unsigned char data[4];
-// 	glReadPixels(x, 1024-y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &data);
-// 	pickedID = ((data[0] + data[1]*256 + data[2]*256*256)) &0x00ffffff;
-// 	if (pickedID == 0x00ffffff) {
-// 	}
-// 	else {
-// 		if ((int)data[3] == 255) {
-// //			std::cout << "r:" << (int)data[0] << ", g:" << (int)data[1] << ", b:" << (int)data[2] << ", a:" << (int)data[3] << std::endl;
-// //			std::cout << "EdgeID : " <<pickedID << std::endl;
-// 		}
-// 	}
+
 	if (lefthold)
 	{
 		glFlush();

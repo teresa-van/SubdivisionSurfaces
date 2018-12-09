@@ -3,7 +3,7 @@
 uniform mat4 modelView;
 uniform mat4 ortho;
 
-uniform bool depth;
+uniform int depth;
 
 layout (location = 0) in vec3 vertex;
 layout (location = 1) in vec3 col;
@@ -28,7 +28,7 @@ void main(void) {
         gl_Position =modelView * vec4(vertex, 1.0);   
         C0 = col0;
     }
-//    if (depth)
+//    if (depth==1)
 //    C = vec4(vec3(-gl_Position.z),1.0f).xyz*col;
 //    C = vec4(0.0f,0.0f,-.0f,1.0f).xyz*col;
 //    else
