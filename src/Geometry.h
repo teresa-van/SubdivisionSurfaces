@@ -87,6 +87,7 @@ public:
 	void subdivideFaces(Mesh* mesh, std::vector<int> *pickedIDs);
 	
 	void stretchFace(Mesh* mesh, std::vector<int> *pickedIDs, float d);
+	void pullFace(Mesh* mesh, std::vector<int> *pickedIDs, float d);
 	void writeToOBJ(Mesh* mesh, std::string path);
 	void readFromOBJ(Mesh* mesh, char* path);
 };

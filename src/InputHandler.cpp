@@ -71,7 +71,9 @@ void InputHandler::key(GLFWwindow* window, int key, int scancode, int action, in
 		std::string path;
 		std::cout << "Save (.obj) file name: ";
 		std::cin >> path;
-		if (path.compare(path.size()-4,path.size()-1,".obj") != 0){
+		if (path.size()<5)
+			std::cout << "Invalid File Name" << std::endl;
+		else if (path.compare(path.size()-4,path.size()-1,".obj") != 0){
 			std::cout << "Invalid File Name" << std::endl;
 		}
 		else {
@@ -92,6 +94,7 @@ void InputHandler::key(GLFWwindow* window, int key, int scancode, int action, in
 					g->writeToOBJ(mesh, path);
 			}
 			ifile.close();
+			std::cout << "file saved!" <<std::endl;
 		}
 	}
 	if (key == GLFW_KEY_O && action == GLFW_PRESS) {
@@ -102,13 +105,16 @@ void InputHandler::key(GLFWwindow* window, int key, int scancode, int action, in
 		char charpath[path.size()];
 		
 		strcpy(charpath, path.c_str());
-		if (path.compare(path.size()-4,path.size()-1,".obj") != 0){
+		if (path.size()<5)
+			std::cout << "Invalid File Name" << std::endl;
+		else if (path.compare(path.size()-4,path.size()-1,".obj") != 0){
 			std::cout << "Invalid File Name" << std::endl;
 		}
 		else {
 			std::cout << "opening " << path << std::endl;
 			for (Geometry * g : stuff)
 				g->readFromOBJ(mesh, charpath);
+			std::cout << "file saved!" <<std::endl;
 		}
 	}
 	

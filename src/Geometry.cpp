@@ -1194,15 +1194,6 @@ void Geometry::stretchFace(Mesh* mesh, std::vector<int> *pickedIDs, float d) {
 				float nFaces = 0.0f;
 				HalfEdge* cur = current->start->e;
 				do {
-					// adding border vertices
-/*					if (find(selectedFaces.begin(), selectedFaces.end(), cur->f) == selectedFaces.end()) {
-						Vertex* v0 = new Vertex();
-						v0->v.x = cur->start->v.x;
-						v0->v.y = cur->start->v.y;
-						v0->v.z = cur->start->v.z;
-						newVerts.push_back(cur->start);
-//						break;
-					}*/
 					// find average vn on current->start for direction of elevation
 					vd += cur->f->center->vn;
 					nFaces++;					
@@ -1211,11 +1202,69 @@ void Geometry::stretchFace(Mesh* mesh, std::vector<int> *pickedIDs, float d) {
 				vd = vd/nFaces;
 				selectedVertsDirection.push_back(vd);
 			}
-/*			if (find(unselectedAdjFaces.begin(), unselectedAdjFaces.end(), current->pairEdge->f) == unselectedAdjFaces.end()
-				&& find(selectedFaces.begin(), selectedFaces.end(), current->pairEdge->f) == selectedFaces.end()) {
-				unselectedAdjFaces.push_back(current->pairEdge->f);
-				pickedIDs->push_back(current->pairEdge->f->id);
-			}*/
+			current = current->nextEdge;
+		} while (current!= f->e);
+	}
+	for (int i=0; i<selectedFaceVerts.size(); i++) {
+		selectedFaceVerts[i]->v += d*selectedVertsDirection[i];
+	}
+	for (Face* f : mesh->faces)
+	{
+		Vertex* v0 = new Vertex();
+		HalfEdge* current = f->e;
+		v0->v = glm::vec3(0.0f);
+		float nEdges = 0.0f;
+		do
+		{
+			v0->v += current->start->v;
+			nEdges++;
+			current = current->nextEdge;
+		} while (current!= f->e);
+		v0->v = v0->v/nEdges;
+
+		f->center = v0;
+		f->center->vn = glm::normalize(glm::cross(
+			f->e->nextEdge->start->v - f->e->start->v,
+			f->e->nextEdge->nextEdge->start->v - f->e->start->v));
+	}
+	this->clearGeometry();
+	this->makeModel(mesh->faces);
+
+}
+
+void Geometry::pullFace(Mesh* mesh, std::vector<int> *pickedIDs, float d) {
+	std::vector<Face*> newFaces;
+	std::vector<Face*> selectedFaces;
+	std::vector<Face*> unselectedAdjFaces;
+	
+	std::vector<Vertex*> selectedFaceVerts;
+	std::vector<glm::vec3> selectedVertsDirection;
+	std::vector<Vertex*> newVerts;
+
+	// makes list of selected faces
+	for (Face* f : mesh->faces)
+	{
+		if (find(pickedIDs->begin(), pickedIDs->end(), f->id) != pickedIDs->end())
+			selectedFaces.push_back(f);
+	}
+	for (Face* f : selectedFaces) {
+		HalfEdge* current = f->e;
+		do {
+			// finds selected face vertices (all should be pulled)
+			if (find(selectedFaceVerts.begin(), selectedFaceVerts.end(), current->start) == selectedFaceVerts.end()) {
+				selectedFaceVerts.push_back(current->start);
+				glm::vec3 vd = glm::vec3(0.0f);
+				float nFaces = 0.0f;
+				HalfEdge* cur = current->start->e;
+				do {
+					// find average vn on current->start for direction of elevation
+					vd += cur->f->center->vn;
+					nFaces++;					
+					cur = cur->pairEdge->nextEdge;
+				} while (cur != current->start->e);	
+				vd = vd/nFaces;
+				selectedVertsDirection.push_back(vd);
+			}
 			current = current->nextEdge;
 		} while (current!= f->e);
 	}
@@ -1260,12 +1309,10 @@ void Geometry::writeToOBJ(Mesh * mesh, std::string path) {
 	}
 	for (Face* f : mesh->faces) {
 		HalfEdge* current = f->e;
-//		do {
-			faceNormals.push_back(glm::normalize(glm::cross(
-				current->nextEdge->start->v - current->start->v,
-				current->nextEdge->nextEdge->start->v - current->start->v)));
-//			current = current->nextEdge;
-//		} while (current!= f->e);
+/*		faceNormals.push_back(glm::normalize(glm::cross(
+			current->nextEdge->start->v - current->start->v,
+			current->nextEdge->nextEdge->start->v - current->start->v)));*/
+		faceNormals.push_back(f->center->vn);
 	}
 	std::ofstream myfile(path);
 	myfile << std::fixed;
@@ -1296,7 +1343,6 @@ void Geometry::readFromOBJ(Mesh* mesh, char* path) {
 	std::vector<glm::vec3> vnormals;
 	std::vector<std::vector<int>> faces;
 	std::vector<std::vector<int>> fnormals;
-std::cout << "Dfds" << std::endl;
 	bool res = loadOBJ(path, vertices, vnormals, faces, fnormals);
 	
 	std::vector<Vertex*> vList;
