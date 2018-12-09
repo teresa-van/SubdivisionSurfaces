@@ -33,12 +33,12 @@ void Program::setupWindow()
 		exit(EXIT_FAILURE);
 
 
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+//	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+//	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 //	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+//	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_SAMPLES, 16);
-	glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_FALSE);
+//	glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_FALSE);
 
 	window = glfwCreateWindow(1024, 1024, "Subdivision Surfaces", NULL, NULL);
 	glfwMakeContextCurrent(window);
@@ -97,9 +97,9 @@ void Program::mainLoop()
 	std::vector<std::vector<int>> faces;
 	std::vector<std::vector<int>> fnormals;
 
-	bool res = loadOBJ("cube.obj", vertices, vnormals, faces, fnormals);
+//	bool res = loadOBJ("cube.obj", vertices, vnormals, faces, fnormals);
 	// bool res = loadOBJ("pyramid.obj", vertices, vnormals, faces, fnormals);
-//	 bool res = loadOBJ("male_head.obj", vertices, vnormals, faces, fnormals);
+	 bool res = loadOBJ("head.obj", vertices, vnormals, faces, fnormals);
 //	bool res = loadOBJ("uh60.obj", vertices, vnormals, faces, fnormals);
 
 	std::vector<Vertex*> vList;
@@ -176,6 +176,9 @@ void Program::mainLoop()
 		}
 		v0->v = v0->v / (float)face.size();
 		fList[faceIndex]->center = v0;
+		fList[faceIndex]->center->vn = glm::normalize(glm::cross(
+			fList[faceIndex]->e->nextEdge->start->v - fList[faceIndex]->e->start->v,
+			fList[faceIndex]->e->nextEdge->nextEdge->start->v - fList[faceIndex]->e->start->v));
 
 		fList[faceIndex]->id = faceIndex;
 		Geometry::EdgeIDs[faceIndex] = fList[faceIndex];

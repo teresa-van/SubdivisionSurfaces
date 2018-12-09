@@ -55,6 +55,13 @@ void InputHandler::key(GLFWwindow* window, int key, int scancode, int action, in
 		moveUp = false;
 	if (key == GLFW_KEY_F && action == GLFW_RELEASE)
 		moveDown = false;
+		
+	if (key == GLFW_KEY_UP && (action == GLFW_PRESS ||action == GLFW_REPEAT))
+		for (Geometry * g : stuff)
+			g->stretchFace(mesh, &pickedIDs, 1.0f);
+	if (key == GLFW_KEY_DOWN && (action == GLFW_PRESS ||action == GLFW_REPEAT))
+		for (Geometry * g : stuff)
+			g->stretchFace(mesh, &pickedIDs, -1.0f);
 
 	if (key == GLFW_KEY_SPACE && action == GLFW_RELEASE)
 		for (Geometry * g : stuff)
