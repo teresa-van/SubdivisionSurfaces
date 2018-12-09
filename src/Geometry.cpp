@@ -1170,13 +1170,13 @@ void Geometry::subdivideFaces(Mesh * mesh, std::vector<int> *pickedIDs)
 
 
 void Geometry::stretchFace(Mesh* mesh, std::vector<int> *pickedIDs, float d) {
-	std::vector<Face*> newFaces;
+//	std::vector<Face*> newFaces;
 	std::vector<Face*> selectedFaces;
-	std::vector<Face*> unselectedAdjFaces;
+//	std::vector<Face*> unselectedAdjFaces;
 	
 	std::vector<Vertex*> selectedFaceVerts;
 	std::vector<glm::vec3> selectedVertsDirection;
-	std::vector<Vertex*> newVerts;
+//	std::vector<Vertex*> newVerts;
 
 	// makes list of selected faces
 	for (Face* f : mesh->faces)
@@ -1201,6 +1201,7 @@ void Geometry::stretchFace(Mesh* mesh, std::vector<int> *pickedIDs, float d) {
 				} while (cur != current->start->e);	
 				vd = vd/nFaces;
 				selectedVertsDirection.push_back(vd);
+//				selectedVertsDirection.push_back(f->center->vn);
 			}
 			current = current->nextEdge;
 		} while (current!= f->e);
@@ -1257,6 +1258,16 @@ void Geometry::pullFace(Mesh* mesh, std::vector<int> *pickedIDs, float d) {
 				float nFaces = 0.0f;
 				HalfEdge* cur = current->start->e;
 				do {
+					// adding border vertices
+					if (find(selectedFaces.begin(), selectedFaces.end(), cur->f) == selectedFaces.end()) {
+						Vertex* v0 = new Vertex();
+//						v0->v.x = cur->start->v.x;
+//						v0->v.y = cur->start->v.y;
+//						v0->v.z = cur->start->v.z;
+						v0 = cur->start;
+						newVerts.push_back(v0);
+					}
+					
 					// find average vn on current->start for direction of elevation
 					vd += cur->f->center->vn;
 					nFaces++;					
