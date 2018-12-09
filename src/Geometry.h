@@ -2,9 +2,13 @@
 
 #include <glm/glm.hpp>
 #include <GL/glew.h>
-
+#include <iostream>
+#include <fstream>
+#include <iomanip>
 #include <vector>
 #include <map>
+
+#include "myobjects.h"
 
 //#include "InputHandler.h"
 
@@ -79,9 +83,10 @@ public:
 	std::vector<int> selected;
 	std::vector<int> selected0;
 
-	void elevateFace(int fID, float h);
-
-
 	void subdivideMesh(Mesh* mesh);
 	void subdivideFaces(Mesh* mesh, std::vector<int> *pickedIDs);
+	
+	void pullFace(Mesh* mesh, std::vector<int> *pickedIDs);
+	void writeToOBJ(Mesh* mesh, std::string path);
+	void readFromOBJ(Mesh* mesh, char* path);
 };

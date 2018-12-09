@@ -1161,3 +1161,173 @@ void Geometry::subdivideFaces(Mesh * mesh, std::vector<int> *pickedIDs)
 
 	std::cout << "SUBDIVISION COMPLETE" << std::endl;
 }
+
+
+void Geometry::pullFace(Mesh* mesh, std::vector<int> *pickedIDs) {
+	std::vector<Face*> newFaces;
+	std::vector<Face*> selectedFaces;
+
+	for (Face* f : mesh->faces)
+	{
+		if (find(pickedIDs->begin(), pickedIDs->end(), f->id) != pickedIDs->end())
+			selectedFaces.push_back(f);
+	}
+/*	for (Face* f : selectedFaces) {
+		HalfEdge* current = f->e;
+		do {
+			if (find(selectedFaceVerts.begin(), selectedFaceVerts.end(), current->start) == selectedFaceVerts.end())
+				selectedFaceVerts.push_back(current->start);
+			current = current->nextEdge;
+		} while (current!= f->e);
+	}*/
+	
+}
+
+
+void Geometry::writeToOBJ(Mesh * mesh, std::string path) {
+	std::string objName;
+	std::cout << "Enter object's name: ";
+	std::cin >> objName;
+//	std::vector<glm::vec3> faceVertices;
+	std::vector<glm::vec3> faceNormals;
+	std::map<Vertex*,int> vIndices;
+//	for (Vertex* v0 : mesh->vertices) {
+	for (int i=0; i<mesh->vertices.size(); i++) {
+		vIndices[mesh->vertices[i]]=i;
+	}
+	for (Face* f : mesh->faces) {
+		HalfEdge* current = f->e;
+//		do {
+			faceNormals.push_back(glm::normalize(glm::cross(
+				current->nextEdge->start->v - current->start->v,
+				current->nextEdge->nextEdge->start->v - current->start->v)));
+//			current = current->nextEdge;
+//		} while (current!= f->e);
+	}
+	std::ofstream myfile(path);
+	myfile << std::fixed;
+	myfile << std::setprecision(6);
+	if (myfile.is_open()) {
+		myfile << "o " << objName << "\n";
+		for (Vertex* v0 : mesh->vertices)
+			myfile << "v " << v0->v.x <<" " << v0->v.y <<" " << v0->v.z << "\n";
+		for (glm::vec3 vn : faceNormals) 
+			myfile << "vn " << vn.x << " " << vn.y << " " << vn.z << "\n";
+//		for (Face* f : mesh->faces) {
+		for (int i=0; i< mesh->faces.size(); i++) {
+			Face* f = mesh->faces[i];
+			HalfEdge* current = f->e->nextEdge;
+			myfile << "f";
+			do {
+				 myfile << " " << vIndices[current->start]+1 << "/0/" << i+1;
+				current = current->nextEdge;
+			} while (current!= f->e->nextEdge);
+			myfile << "\n";
+		}
+	}
+	myfile.close();
+}
+
+void Geometry::readFromOBJ(Mesh* mesh, char* path) {
+	std::vector<glm::vec3> vertices;
+	std::vector<glm::vec3> vnormals;
+	std::vector<std::vector<int>> faces;
+	std::vector<std::vector<int>> fnormals;
+std::cout << "Dfds" << std::endl;
+	bool res = loadOBJ(path, vertices, vnormals, faces, fnormals);
+	
+	std::vector<Vertex*> vList;
+	std::vector<Face*> fList;
+	std::map<std::pair<int, int>, HalfEdge*> Edges;
+
+	for (glm::vec3 v : vertices)
+	{
+		Vertex* p = new Vertex();
+		p->v = v;
+		vList.push_back(p);
+	}
+
+	for (std::vector<int> f : faces)
+	{
+		Face* fa = new Face();
+		fList.push_back(fa);
+		fa->elevation = 0;
+	}
+
+	int faceIndex = 0;
+	for (std::vector<int> face : faces)
+	{
+		for (int i=0; i<(int)face.size(); i++)
+		{
+			int u, v;
+			u = i;
+			if (u == (int)face.size()-1)
+				v = 0;
+			else
+				v = u+1;
+			std::pair<int,int> uv = std::make_pair(face[u],face[v]);
+
+			Edges[uv] = new HalfEdge();
+			Edges[uv]->sharpness = 0.0f;
+			fList[faceIndex]->id = -1;
+
+			Edges[uv]->f = fList[faceIndex];
+			Edges[uv]->start = vList[face[u]-1];
+			vList[face[u]-1]->e = Edges[uv];
+			fList[faceIndex]->e = Edges[uv];
+		}
+
+
+		Vertex* v0 = new Vertex();
+		v0->v = glm::vec3(0.0f);
+		for (int i=0; i<(int)face.size(); i++)
+		{
+			int u, v, unext, vnext;
+			u = i;
+			if (u == (int)face.size()-1)
+				v = 0;
+			else
+				v = u+1;
+
+			unext = u + 1;
+			vnext = v + 1;
+
+			if (u >= (int)face.size() - 1) unext = 0;
+			if (v >= (int)face.size() - 1) vnext = 0;
+
+			std::pair<int,int> uv = std::make_pair(face[u],face[v]);
+			std::pair<int,int> vu = std::make_pair(uv.second,uv.first);
+			std::pair<int,int> uvnext = std::make_pair(face[unext],face[vnext]);
+
+			Edges[uv]->nextEdge = Edges[uvnext];
+			if (Edges.find(vu) != Edges.end())
+			{
+				Edges[uv]->pairEdge = Edges[vu];
+				Edges[vu]->pairEdge = Edges[uv];
+			}
+
+			v0->v += Edges[uv]->start->v;
+		}
+		v0->v = v0->v / (float)face.size();
+		fList[faceIndex]->center = v0;
+
+		fList[faceIndex]->id = faceIndex;
+		Geometry::EdgeIDs[faceIndex] = fList[faceIndex];
+		faceIndex++;
+	}
+
+//	InputHandler::mesh = new Mesh();
+	this->clearGeometry();
+	this->modelMatrix = glm::mat4(1.f);
+	mesh->faces.clear();
+	mesh->vertices.clear();
+	for (Face * f : fList)
+		mesh->faces.push_back(f);
+	for (Vertex * v : vList)
+		mesh->vertices.push_back(v);
+	mesh->idCounter = faceIndex;
+	this->makeModel(mesh->faces);
+	this->modelMatrix = glm::rotate(this->modelMatrix, glm::radians(180.0f), glm::vec3(0.0f,1.0f,0.0f));
+	this->modelMatrix = glm::rotate(this->modelMatrix, glm::radians(90.0f), glm::vec3(-1.0f,0.0f,0.0f));
+	
+}
