@@ -1235,8 +1235,11 @@ void Geometry::stretchFace(Mesh* mesh, std::vector<int> *pickedIDs, float d) {
 
 void Geometry::pullFace(Mesh* mesh, std::vector<int> *pickedIDs, float d) {
 	std::vector<Face*> newFaces;
+	std::vector<HalfEdge*> border;
 	std::vector<Face*> selectedFaces;
 	std::vector<Face*> unselectedAdjFaces;
+	
+	std::vector<std::vector<HalfEdge*>> islands;
 	
 	std::vector<Vertex*> selectedFaceVerts;
 	std::vector<glm::vec3> selectedVertsDirection;
@@ -1254,30 +1257,158 @@ void Geometry::pullFace(Mesh* mesh, std::vector<int> *pickedIDs, float d) {
 			// finds selected face vertices (all should be pulled)
 			if (find(selectedFaceVerts.begin(), selectedFaceVerts.end(), current->start) == selectedFaceVerts.end()) {
 				selectedFaceVerts.push_back(current->start);
-				glm::vec3 vd = glm::vec3(0.0f);
-				float nFaces = 0.0f;
+//				glm::vec3 vd = glm::vec3(0.0f);
+//				float nFaces = 0.0f;
 				HalfEdge* cur = current->start->e;
 				do {
 					// adding border vertices
 					if (find(selectedFaces.begin(), selectedFaces.end(), cur->f) == selectedFaces.end()) {
-						Vertex* v0 = new Vertex();
+//						Vertex* v0 = new Vertex();
+						
+//						Face* newF = new Face()
+//						HalfEdge* HE0 = new HalfEdge();
+//						HE0 = current;
+//						HalfEdge* HE1 = new HalfEdge();
+//						HalfEdge* HE2 = new HalfEdge();
+//						HalfEdge* HE3 = new HalfEdge();
+//						HalfEdge* HE4 = new HalfEdge();
 //						v0->v.x = cur->start->v.x;
 //						v0->v.y = cur->start->v.y;
 //						v0->v.z = cur->start->v.z;
-						v0 = cur->start;
-						newVerts.push_back(v0);
+//						v0 = cur->start;
+//						newVerts.push_back(v0);
+						border.push_back(current);
+						break;
 					}
 					
 					// find average vn on current->start for direction of elevation
-					vd += cur->f->center->vn;
-					nFaces++;					
+//					vd += cur->f->center->vn;
+//					nFaces++;					
 					cur = cur->pairEdge->nextEdge;
 				} while (cur != current->start->e);	
-				vd = vd/nFaces;
-				selectedVertsDirection.push_back(vd);
+//				vd = vd/nFaces;
+//				selectedVertsDirection.push_back(vd);
+				selectedVertsDirection.push_back(f->center->vn);
 			}
 			current = current->nextEdge;
 		} while (current!= f->e);
+	}
+
+	
+	
+//	nIslands = 0;
+	while (border.size() >0) {
+		std::vector<HalfEdge*> nisland;
+		HalfEdge* startBorder = border[0];
+		HalfEdge* currentBorder = startBorder;
+		do {
+			if (find(selectedFaces.begin(), selectedFaces.end(), currentBorder->pairEdge->f) == selectedFaces.end()) {
+				nisland.push_back(currentBorder->pairEdge);
+				border.erase(border.begin());
+//				border.erase(find(border.begin(),border.end(),currentBorder));
+				currentBorder = currentBorder->nextEdge;
+			}
+			else {
+				
+				currentBorder = currentBorder->pairEdge->nextEdge;
+			}
+		} while(currentBorder != startBorder);
+		islands.push_back(nisland);
+	}
+	for (std::vector<HalfEdge*> island : islands) {
+		for (int i=0; i<island.size(); i++) {
+			HalfEdge* current = island[i];
+//			HalfEdge* pair = current->pairEdge;
+			Face* newf = new Face();
+			Vertex* v0 = new Vertex();
+			v0->v = current->start->v;
+			HalfEdge* HE1 = new HalfEdge();
+			HalfEdge* HE2 = new HalfEdge();
+			HalfEdge* HE3 = new HalfEdge();
+			HalfEdge* HE4 = new HalfEdge();
+			
+			
+			HE1->start = current->pairEdge->start;
+			HE2->start = current->nextEdge->start;
+			HE3->start = v0;
+			HE4->start = v0;
+			
+
+			HE1->nextEdge = HE2;
+			HE2->nextEdge = HE4;
+			HE4->nextEdge = current;
+			HE3->nextEdge = current->nextEdge;
+			current->nextEdge->nextEdge->nextEdge->nextEdge = HE3;
+			current->nextEdge = HE1;
+			
+			HE1->f = newf;
+			HE2->f = newf;
+			HE4->f = newf;
+			HE3->f = current->f;
+			current->f = newf;
+
+			
+			newf->id = mesh->idCounter;
+			mesh->idCounter++;
+			HE2->pairEdge = HE3;
+			HE3->pairEdge = HE2;
+			
+			v0->e = HE4;
+			newf->e = HE4; 
+			current->f->e = HE3;
+			
+
+			if (i>0) {
+				HE1->pairEdge = island[i-1]->f->e;
+				island[i-1]->f->e->pairEdge = HE1;
+//				current->nextEdge->start = island[i-1]->f->e->start;
+/*				HalfEdge* cur = island[i-1]->f->e;
+				Vertex* cv = cur->start;
+				do {
+					cur->start = cv;
+					std::cout<< "aaaa" << std::endl;
+					cur = cur->pairEdge->nextEdge;
+				}while (cur != island[i-1]->f->e);*/
+
+			}
+			if (i==island.size()-1) {
+				HE4->pairEdge = island[0]->nextEdge;
+				island[0]->nextEdge->pairEdge = HE4;
+/*				HalfEdge* cur = HE4;
+				Vertex* cv = cur->start;
+				do {
+					cur->start = cv;
+					std::cout<< "dddd" << std::endl;
+					cur = cur->pairEdge->nextEdge;
+				}while (cur != HE4);*/
+//				HE4->pairEdge = island[0]->f->e->nextEdge->nextEdge;
+//				island[0]->f->e->nextEdge->nextEdge->pairEdge = HE4;
+			}
+			newVerts.push_back(v0);
+			newFaces.push_back(newf);
+			
+		}
+	}
+/*	for (std::vector<HalfEdge*> island : islands) {
+		for (int i=0; i<island.size(); i++) {
+			HalfEdge* current = island[i];
+			HalfEdge* cur = island[i]->f->e;
+			Vertex* cv = cur->start;
+			do {
+				cur->start = cv;
+				cur = cur->pairEdge->nextEdge;
+			}while (cur != island[i]->f->e);
+			
+		}
+	}
+*/
+	
+//	std::cout << newVerts.size() << std::endl;
+//	std::cout << newFaces.size() << std::endl;
+	for (Vertex* v0 : newVerts)
+		mesh->vertices.push_back(v0);
+	for (Face* f0 : newFaces) {
+		mesh->faces.push_back(f0);
 	}
 	for (int i=0; i<selectedFaceVerts.size(); i++) {
 		selectedFaceVerts[i]->v += d*selectedVertsDirection[i];

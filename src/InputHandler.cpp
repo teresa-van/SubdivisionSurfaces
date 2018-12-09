@@ -63,6 +63,13 @@ void InputHandler::key(GLFWwindow* window, int key, int scancode, int action, in
 		for (Geometry * g : stuff)
 			g->stretchFace(mesh, &pickedIDs, -1.0f);
 
+	if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS)
+		for (Geometry * g : stuff)
+			g->pullFace(mesh, &pickedIDs, 1.0f);
+	if (key == GLFW_KEY_LEFT && action == GLFW_PRESS)
+		for (Geometry * g : stuff)
+			g->pullFace(mesh, &pickedIDs, -1.0f);
+
 	if (key == GLFW_KEY_SPACE && action == GLFW_RELEASE)
 		for (Geometry * g : stuff)
 			g->subdivideFaces(mesh, &pickedIDs);
