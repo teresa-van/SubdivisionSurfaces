@@ -1384,6 +1384,7 @@ void Geometry::pullFace(Mesh* mesh, std::vector<int> *pickedIDs, float d) {
 			
 //			HE1->pairEdge->nextEdge->start = HE1->start;
 			HE3->pairEdge->start = v0;
+			HE3->pairEdge->nextEdge->pairEdge->start = v0;
 			
 			nhes.push_back(HEn);
 			ohes.push_back(HOn);
